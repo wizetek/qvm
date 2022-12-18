@@ -98,20 +98,20 @@ Boots from the specified `.iso` image. (Good for testing but not suitable for in
 
 ```
 $ vim foo
-IMG="pepper.qcow2"
+IMG="peppermint.qcow2"
 ```
 ```
 $ qvm foo
 
 Configuration file: /home/you/foo
 
-IMG=pepper.qcow2: inaccessible or not found.
+IMG=peppermint.qcow2: inaccessible or not found.
 Create empty disk image file now? [y/N] y
 Disk image size: [50G] 
 File format: [qcow2] 
-Name: [pepper.qcow2] 
+Name: [peppermint.qcow2] 
 
-Formatting 'pepper.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
+Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 ```
 
-Launches the VM using the disk image `pepper.qcow2` if available, otherwise asks to create it.
+Starts the VM using the disk image `peppermint.qcow2` if available, otherwise asks to create it.
