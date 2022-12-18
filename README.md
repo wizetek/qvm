@@ -1,12 +1,15 @@
 # qvm
 Quick/QEMU VM launcher
+<br>
+
+**Requires a configuration file for an argument and passes multiple options to qemu.**
 <br><br><br>
 
 #### Usage:
 ```
 $ qvm myconfigfile
 ```
-Use settings in `myconfigfile` to launch VM. Create new config on first use or if not found. 
+Use settings in `myconfigfile` to launch a virtual machine instance. Create new configuration on first use or if not found. 
 <br><br><br>
 
 ```
@@ -16,7 +19,7 @@ IMG="pepper.qcow2"
 
 $ qvm pepper.qvm
 ```
-Use disk image `pepper.qcow2` if available, otherwise prompt to create one.
+Launch a VM and use disk image `pepper.qcow2` if available, otherwise prompt to create one.
 <br><br><br>
 
 ```
@@ -25,7 +28,7 @@ ISO="PeppermintOS-amd64.iso"
 
 $ qvm pepper.qvm
 ```
-Boot from `.iso` image.
+Boot from a specified `.iso` image.
 <br><br><br>
 
 #### Configuration:
