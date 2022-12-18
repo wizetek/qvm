@@ -1,13 +1,14 @@
 # qvm
 Quick/QEMU VM launcher
 <br><br><br>
-#### Usage examples:
+#### Usage:
 ```
-$ qvm pepper.qvm
+$ qvm myconfigfile
 ```
-Use settings in `pepper.qvm` to launch VM. Create a new config file on first use or if not found. 
+Use settings in `myconfigfile` to launch VM. Create a new one on first use or if not found. 
 <br><br><br>
 ```
+$ qvm pepper.qvm
 $ vim pepper.qvm
 ISO="PeppermintOS-amd64.iso"
 IMG=pepper.qcow2
