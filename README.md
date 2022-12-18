@@ -21,7 +21,7 @@ $ qvm
 
 ```
 
-Requires a configuration file for an argument and optionally takes multiple options to pass directly to `qemu`.
+Requires a configuration file as an argument and optionally takes multiple options to pass directly to `qemu`.
 
 <br><br>
 
