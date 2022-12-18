@@ -1,8 +1,18 @@
 # qvm
 Quick/QEMU VM launcher
+
 <br><br>
 
-#### Usage:
+## Installation
+
+```
+$ sudo mv qvm /usr/local/bin/
+$ sudo chmod +x /usr/local/bin/qvm
+```
+
+<br><br>
+
+## Usage
 
 ```
 $ qvm
