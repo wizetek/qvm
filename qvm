@@ -84,7 +84,7 @@ else
 ## MAC= <blank> | 52:54:01:23:45:67
 ##   (blank/empty means random)
 ## ICH9= <boolean>
-##   (host chipset ICH9 or I440FX)
+##   (host chipset Q35/ICH9 or i440FX/PIIX3)
 ##
 ## OPT=
 ## -hdb /path/to/seconddisk.img
@@ -209,7 +209,7 @@ case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) SOUND="-device in
 esac
 
 ##
-## Chipset: i440FX PIIX3 PCI/ISA (default) or ICH9 PCI-E/AHCI
+## Chipset: i440FX+PIIX3 PCI/ISA (default) or Q35+ICH9 PCI-E/AHCI
 ##
 case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine q35" ;;
 esac
