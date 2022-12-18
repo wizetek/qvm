@@ -146,8 +146,8 @@ if [[ ! ${IMG} ]]; then
 
 elif [[ ! -e ${IMG} ]]; then
 
-  echo "IMG=${IMG}: inaccessible or not found."
   echo
+  echo "IMG=${IMG}: inaccessible or not found."
   read -p "Create empty disk image file now? [y/N] " INPUT
 
   case ${INPUT} in y|Y|[yY][eE][sS])
