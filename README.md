@@ -6,8 +6,8 @@ Quick/QEMU VM launcher
 ## Installation
 
 ```
+$ chmod +x qvm
 $ sudo mv qvm /usr/local/bin/
-$ sudo chmod +x /usr/local/bin/qvm
 ```
 
 <br><br>
