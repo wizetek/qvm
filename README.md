@@ -17,7 +17,7 @@ $ qvm pepper.qvm
 ```
 Use disk image `pepper.qcow2` if available, otherwise prompt to create one. Boot from `.iso` image first.
 <br><br><br>
-#### Configuration file:
+#### Configuration:
 ```
 ############################################################
 ## qvm configuration
