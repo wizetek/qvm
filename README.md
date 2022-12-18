@@ -12,7 +12,7 @@ Use settings in `myconfigfile` to launch VM. Create new config on first use or i
 ```
 $ qvm pepper.qvm
 $ vim pepper.qvm
-IMG=pepper.qcow2
+IMG="pepper.qcow2"
 
 $ qvm pepper.qvm
 ```
