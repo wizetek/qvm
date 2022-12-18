@@ -1,0 +1,265 @@
+#!/usr/bin/env bash
+
+## qvm - Quick/QEMU VM launcher
+## 2022/11/25-2022/12/17
+## Tom Wzietek
+
+##
+## Function to create disk image
+##
+createDiskImage()
+{
+  read -p "Disk image size: [50G] " IMGSIZE
+  [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
+
+  read -p "File format: [qcow2] " IMGFORMAT
+  [[ ! ${IMGFORMAT} ]] && IMGFORMAT=qcow2
+
+  read -p "Name: [${IMG}] " IMGNAME
+  echo
+
+  ## User chose disk image name different from config.
+  if [[ ${IMGNAME} ]]; then
+    IMG=${IMGNAME}
+    echo "IMG=${IMG}: differs in configuration file."
+    echo
+  fi
+
+  ## Create disk image or exit on failure.
+  qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
+}
+
+##
+## Config file and command arguments
+##
+CMD="$(basename ${0})"
+CFG="${1}"
+shift
+ARG="${@}"
+
+##
+## If no (valid) arguments are provided, show usage.
+##
+case ${CFG} in ""|-*) cat << USAGE
+
+  ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
+
+USAGE
+  exit 0
+esac
+
+##
+## Read config file if available, readable, and correct type.
+##
+if [[ -e ${CFG} ]]; then
+
+  if [[ ! -r ${CFG} ]]; then
+    echo "$(realpath ${CFG}): unreadable configuration file."
+    exit 1
+  fi
+
+  if [[ $(file -b ${CFG}) != "ASCII text" ]]; then
+    echo "$(realpath ${CFG}): invalid configuration file."
+    exit 1
+  fi
+
+  source ${CFG}
+
+##
+## Prompt to create config file if not found.
+##
+else
+
+  echo
+  echo "$(realpath ${CFG}): configuration file not found."
+  read -p "Create it now from template? [y/N] " INPUT
+
+  case ${INPUT} in y|Y|[yY][eE][sS]) cat 2>/dev/null 1>${CFG} << CONFIG
+############################################################
+## ${CMD} configuration
+##
+## Tips:
+##
+## NET= <boolean> | bridge0 | br0 | virbr0
+## MAC= <blank> | 52:54:01:23:45:67
+##   (blank/empty means random)
+## ICH9= <boolean>
+##   (host chipset ICH9 or I440FX)
+##
+## OPT=
+## -hdb /path/to/seconddisk.img
+## -hdd fourthdisk.img
+##   (-hdc conflicts with -cdrom)
+## -drive format=raw,media=cdrom,readonly,file=cd.iso
+## -nic model=virtio-net-pci
+## -usb -device usb-tablet
+## -display gtk,gl=on,window-close=off
+## -device VGA,edid=on,xres=1366,yres=768
+## -daemonize
+## ...and other qemu options.
+############################################################
+
+#NAME="Enterprise Linux 7"
+#ISO="Springdale_Linux-7.9-x86_64-netinst.iso"
+#IMG="springdale.qcow2"
+RAW="no"
+ICH9="no"
+CPU="2"
+MEM="4G"
+NET="yes"
+#MAC="52:54:01:23:45:67"
+#VNC=":2"
+#TELNET="2302"
+AUDIO="no"
+#OPT="-display gtk"
+CONFIG
+
+    ## Exit on write failure to config file.
+    if [[ $? != 0 ]]; then
+      echo
+      echo "$(realpath ${CFG}): write failed."
+      exit 1
+    fi
+
+    echo
+    cat ${CFG}
+    echo
+    echo "Saved in: $(realpath ${CFG})"
+    echo "Edit this file and set IMG= and/or ISO="
+    exit 0
+    ;;
+  esac
+
+  ## Exit if user chose not to create config file.
+  exit 1
+fi
+
+echo
+echo "Configuration file: $(realpath ${CFG})"
+
+##
+## Check if disk image is defined and found, prompt to create if needed.
+##
+if [[ ! ${IMG} ]]; then
+
+  echo "IMG= disk image file not set."
+
+elif [[ ! -e ${IMG} ]]; then
+
+  echo "IMG=${IMG}: inaccessible or not found."
+  echo
+  read -p "Create empty disk image file now? [y/N] " INPUT
+
+  case ${INPUT} in y|Y|[yY][eE][sS])
+    createDiskImage
+    exit 0
+    ;;
+  esac
+
+  ## Exit if user chose not to create disk image.
+  exit 1
+fi
+
+##
+## Check if RAW disk image format is set.
+##
+if [[ ${IMG} ]]; then
+
+  case ${RAW} in
+    1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) DISK="-drive format=raw,file=${IMG}" ;;
+    *) DISK="-hda ${IMG}" ;;
+  esac
+
+fi
+
+##
+## Boot from ISO if defined and found.
+##
+if [[ ${ISO} ]]; then
+
+  if [[ -e ${ISO} ]]; then CDROM="-boot d -cdrom ${ISO}"
+  else echo "ISO=${ISO}: inaccessible or not found. (ignored)"
+  fi
+
+fi
+
+##
+## Network (default: enabled)
+##
+case ${NET} in
+
+  br*|bridge*|virbr*) NIC="-nic bridge,br=${NET}" ;;
+
+  0|n|N|[nN][oO]|[oO][fF][fF]|[fF][aA][lL][sS][eE]|"") NIC="-nic none" ;;
+
+  *)
+
+  ## Generate random MAC address if not defined in config.
+  [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
+
+  NIC="-nic mac=${MAC}"
+  ;;
+
+esac
+
+##
+## Audio (default: disabled)
+##
+case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) SOUND="-device intel-hda -device hda-duplex" ;;
+esac
+
+##
+## Chipset: i440FX PIIX3 PCI/ISA (default) or ICH9 PCI-E/AHCI
+##
+case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine q35" ;;
+esac
+
+##
+## Display output and console monitor
+##
+[[ ${VNC} ]] && VIDEO="-vnc ${VNC},to=99,lossy=on,power-control=on"
+[[ ${TELNET} ]] && CONSOLE="-monitor telnet:127.0.0.1:${TELNET},server=on,wait=off"
+
+##
+## Check config for missing settings and set defaults if needed.
+##
+[[ ! ${NAME} ]] && NAME="$(basename ${CFG})"
+[[ ! ${CPU} ]] && CPU=1
+[[ ! ${MEM} ]] && MEM=2G
+
+##
+## Show some relevant VM information on startup.
+##
+echo
+echo                   "VM name    [${NAME}]"
+[[ ${CDROM} ]] && echo "boot from  [$(basename ${ISO})]"
+[[ ${IMG} ]] && echo   "disk image [$(basename ${IMG})]"
+[[ ${SOUND} ]] && echo "audio      [enabled]"
+
+## Only show MAC address if network is enabled.
+if [[ ${NIC} == "-nic none" ]]; then echo "network    [disabled]"
+else echo                                 "NIC MAC    [${MAC}]"
+fi
+
+[[ ${TELNET} ]] && echo "TELNET     [:${TELNET}]"
+[[ ${VNC} ]] && echo    "VNC        [${VNC}]"
+
+##
+## Launch!
+##
+qemu-system-x86_64 \
+-name "${NAME}" \
+-accel kvm -cpu host \
+-smp ${CPU} \
+-m ${MEM} \
+${CHIPSET} \
+${VIDEO} \
+${CONSOLE} \
+${NIC} \
+${SOUND} \
+${DISK} \
+${CDROM} \
+${OPT} \
+${ARG}
+
+##
