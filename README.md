@@ -1,38 +1,26 @@
 # qvm
 Quick/QEMU VM launcher
-<br>
-
-**Requires a configuration file for an argument and passes multiple options to qemu.**
-<br><br><br>
+<br><br>
 
 #### Usage:
-```
-$ qvm myconfigfile
-```
-Use settings in `myconfigfile` to launch a virtual machine instance. Create new configuration on first use or if not found. 
-<br><br><br>
 
 ```
-$ qvm pepper.qvm
-$ vim pepper.qvm
-IMG="pepper.qcow2"
+$ qvm
 
-$ qvm pepper.qvm
-```
-Launch a VM and use disk image `pepper.qcow2` if available, otherwise prompt to create one.
-<br><br><br>
+  qvm <configfile> [-qemuopt1 -qemuopt2 ...]
 
 ```
-$ vim pepper.qvm
-ISO="PeppermintOS-amd64.iso"
 
-$ qvm pepper.qvm
-```
-Boot from a specified `.iso` image.
-<br><br><br>
+Requires a configuration file for an argument and optionally takes multiple options to pass directly to qemu.
 
-#### Configuration:
+<br><br>
+
 ```
+$ qvm foo
+
+/home/you/foo: configuration file not found.
+Create it now from template? [y/N] y
+
 ############################################################
 ## qvm configuration
 ##
@@ -57,9 +45,9 @@ Boot from a specified `.iso` image.
 ## ...and other qemu options.
 ############################################################
 
-NAME="Peppermint"
-ISO="PeppermintOS-amd64.iso"
-IMG="pepper.qcow2"
+#NAME="Enterprise Linux 7"
+#ISO="Springdale_Linux-7.9-x86_64-netinst.iso"
+#IMG="springdale.qcow2"
 RAW="no"
 ICH9="no"
 CPU="2"
@@ -70,4 +58,50 @@ NET="yes"
 #TELNET="2302"
 AUDIO="no"
 #OPT="-display gtk"
+
+Saved in: /home/you/foo
+Edit this file and set IMG= and/or ISO=
 ```
+
+Launches the virtual machine using the configuration file `foo` if available, otherwise creates it.
+
+<br><br>
+
+```
+$ vim foo
+ISO="PeppermintOS-amd64.iso"
+```
+```
+$ qvm foo
+
+Configuration file: /home/you/foo
+IMG= disk image file not set.
+
+VM name    [foo]
+boot from  [PeppermintOS-amd64.iso]
+NIC MAC    [52:54:50:0e:39:ce]
+```
+
+Boots from the specified `.iso` image. (Good for testing but not suitable for installation without a disk image attached.)
+
+<br><br>
+
+```
+$ vim foo
+IMG="pepper.qcow2"
+```
+```
+$ qvm foo
+
+Configuration file: /home/you/foo
+
+IMG=pepper.qcow2: inaccessible or not found.
+Create empty disk image file now? [y/N] y
+Disk image size: [50G] 
+File format: [qcow2] 
+Name: [pepper.qcow2] 
+
+Formatting 'pepper.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
+```
+
+Launches the VM using the disk image `pepper.qcow2` if available, otherwise asks to create it.
