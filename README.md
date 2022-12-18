@@ -1,22 +1,33 @@
 # qvm
 Quick/QEMU VM launcher
 <br><br><br>
+
 #### Usage:
 ```
 $ qvm myconfigfile
 ```
-Use settings in `myconfigfile` to launch VM. Create a new one on first use or if not found. 
+Use settings in `myconfigfile` to launch VM. Create new config on first use or if not found. 
 <br><br><br>
+
 ```
 $ qvm pepper.qvm
 $ vim pepper.qvm
-ISO="PeppermintOS-amd64.iso"
 IMG=pepper.qcow2
 
 $ qvm pepper.qvm
 ```
-Use disk image `pepper.qcow2` if available, otherwise prompt to create one. Boot from `.iso` image first.
+Use disk image `pepper.qcow2` if available, otherwise prompt to create one.
 <br><br><br>
+
+```
+$ vim pepper.qvm
+ISO="PeppermintOS-amd64.iso"
+
+$ qvm pepper.qvm
+```
+Boot from `.iso` image.
+<br><br><br>
+
 #### Configuration:
 ```
 ############################################################
@@ -28,7 +39,7 @@ Use disk image `pepper.qcow2` if available, otherwise prompt to create one. Boot
 ## MAC= <blank> | 52:54:01:23:45:67
 ##   (blank/empty means random)
 ## ICH9= <boolean>
-##   (host chipset ICH9 or I440FX)
+##   (host chipset Q35/ICH9 or i440FX/PIIX3)
 ##
 ## OPT=
 ## -hdb /path/to/seconddisk.img
