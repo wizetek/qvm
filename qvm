@@ -233,7 +233,7 @@ esac
 ##
 echo
 echo                   "VM name     [${NAME}]"
-[[ ${CDROM} ]] && echo "boot device [$(basename ${ISO})]"
+[[ ${CDROM} ]] && echo "boot first  [$(basename ${ISO})]"
 [[ ${IMG} ]] && echo   "disk image  [$(basename ${IMG})]"
 [[ ${SOUND} ]] && echo "audio       [enabled]"
 
