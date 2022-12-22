@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2022/12/21
+## 2022/11/25-2022/12/22
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -238,9 +238,10 @@ echo                   "VM name    [${NAME}]"
 [[ ${SOUND} ]] && echo "audio      [enabled]"
 
 ## Only show MAC address if defined and if network is enabled.
-if   [[ ${NIC} == "-nic none" ]]; then echo    "network    [disabled]"
-elif [[ ${NIC} == "-nic bridge"* ]]; then echo "network    [bridge] ${MAC}"
-elif [[ ${MAC} ]]; then echo                   "NIC MAC    [${MAC}]"
+if [[ ${NIC} == "-nic none" ]]; then echo "network    [disabled]"
+else
+  [[ ${NIC} == "-nic bridge"* ]] && echo  "network    [bridge]"
+  [[ ${MAC} ]] && echo                    "MAC addr.  [${MAC}]"
 fi
 
 [[ ${TELNET} ]] && echo "TELNET     [:${TELNET}]"
