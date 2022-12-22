@@ -88,7 +88,7 @@ Configuration file: /home/you/foo
 IMG= disk image file not set.
 
 VM name     [foo]
-boot first  [PeppermintOS-amd64.iso]
+boot from   [PeppermintOS-amd64.iso]
 MAC address [52:54:50:0e:39:ce]
 ```
 
