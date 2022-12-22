@@ -232,20 +232,20 @@ esac
 ## Show some relevant VM information on startup.
 ##
 echo
-echo                   "VM name    [${NAME}]"
-[[ ${CDROM} ]] && echo "boot from  [$(basename ${ISO})]"
-[[ ${IMG} ]] && echo   "disk image [$(basename ${IMG})]"
-[[ ${SOUND} ]] && echo "audio      [enabled]"
+echo                   "VM name     [${NAME}]"
+[[ ${CDROM} ]] && echo "boot device [$(basename ${ISO})]"
+[[ ${IMG} ]] && echo   "disk image  [$(basename ${IMG})]"
+[[ ${SOUND} ]] && echo "audio       [enabled]"
 
 ## Only show MAC address if defined and if network is enabled.
-if [[ ${NIC} == "-nic none" ]]; then echo "network    [disabled]"
+if [[ ${NIC} == "-nic none" ]]; then echo "network     [disabled]"
 else
-  [[ ${NIC} == "-nic bridge"* ]] && echo  "network    [bridge]"
-  [[ ${MAC} ]] && echo                    "MAC addr.  [${MAC}]"
+  [[ ${NIC} == "-nic bridge"* ]] && echo  "network     [bridge]"
+  [[ ${MAC} ]] && echo                    "MAC address [${MAC}]"
 fi
 
-[[ ${TELNET} ]] && echo "TELNET     [:${TELNET}]"
-[[ ${VNC} ]] && echo    "VNC        [${VNC}]"
+[[ ${TELNET} ]] && echo "TELNET      [:${TELNET}]"
+[[ ${VNC} ]] && echo    "VNC         [${VNC}]"
 
 ##
 ## Launch!
