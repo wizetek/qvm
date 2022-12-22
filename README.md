@@ -89,7 +89,7 @@ IMG= disk image file not set.
 
 VM name    [foo]
 boot from  [PeppermintOS-amd64.iso]
-NIC MAC    [52:54:50:0e:39:ce]
+MAC addr.  [52:54:50:0e:39:ce]
 ```
 
 Boots from the specified `.iso` image. (Good for testing but not suitable for installation without a disk image attached.)
