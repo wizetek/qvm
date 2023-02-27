@@ -75,8 +75,9 @@ Launches the virtual machine using the configuration file `foo` if available, ot
 
 ```
 $ vim foo
-
+...
 ISO="PeppermintOS-amd64.iso"
+...
 ```
 ```
 $ qvm foo
@@ -94,17 +95,18 @@ Boots from the specified `.iso` image. (Good for testing but not suitable for in
 
 ```
 $ vim foo
-
+...
 IMG="peppermint.qcow2"
+...
 ```
 ```
 $ qvm foo
 Configuration file: /home/you/foo
 IMG=peppermint.qcow2: inaccessible or not found.
 Create empty disk image file now? (y)/n
-Disk image size (50G) 
-File format (qcow2) 
-Name (peppermint.qcow2)
+Disk image size (50G) : 
+File format (qcow2) : 
+Name (peppermint.qcow2) : 
 Confirm (y)/n
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
