@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2022/12/22
+## 2022/11/25-2023/02/26
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -9,29 +9,35 @@
 ##
 createDiskImage()
 {
-  read -p "Disk image size: [50G] " IMGSIZE
+  echo
+  read -p "Disk image size (50G) " IMGSIZE
   [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
 
-  read -p "File format: [qcow2] " IMGFORMAT
+  read -p "File format (qcow2) " IMGFORMAT
   [[ ! ${IMGFORMAT} ]] && IMGFORMAT=qcow2
 
-  read -p "Name: [${IMG}] " IMGNAME
-  echo
+  read -p "Name (${IMG}) " IMGNAME
 
   ## User chose disk image name different from config.
   if [[ ${IMGNAME} ]]; then
+    echo "IMG=${IMG} in configuration file. Edit to set IMG=${IMGNAME}"
     IMG=${IMGNAME}
-    echo "IMG=${IMG}: differs in configuration file."
-    echo
   fi
 
+  ## Confirm creating disk image.
+  read -sn1 -p "Confirm (y)/n" INPUT
+  case ${INPUT} in n|N) return ;; esac
+
   ## Create disk image or exit on failure.
+  echo
   qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
+  IMGCREATED=1
 }
 
 ##
-## Config file and command arguments
+## Variables for version, command, config file, and extra arguments
 ##
+VER="1.0.1"
 CMD="$(basename ${0})"
 CFG="${1}"
 shift
@@ -41,11 +47,14 @@ ARG="${@}"
 ## If no (valid) arguments are provided, show usage.
 ##
 case ${CFG} in ""|-*) cat << USAGE
+${CMD} ${VER}
+
+usage:
 
   ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
 
 USAGE
-  exit 0
+  exit
 esac
 
 ##
@@ -70,19 +79,19 @@ if [[ -e ${CFG} ]]; then
 ##
 else
 
-  echo
   echo "$(realpath ${CFG}): configuration file not found."
-  read -p "Create it now from template? [y/N] " INPUT
+  read -sn1 -p "Create it now from template? y/(n)" INPUT
 
-  case ${INPUT} in y|Y|[yY][eE][sS]) cat 2>/dev/null 1>${CFG} << CONFIG
+  case ${INPUT} in y|Y) cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
 ## ${CMD} configuration
 ##
 ## Tips:
 ##
 ## NET= <boolean> | bridge0 | br0 | virbr0
-## MAC= <blank> | 52:54:01:23:45:67
-##   (blank/empty means random)
+##   (empty means enabled)
+## MAC= <empty> | 52:54:01:23:45:67
+##   (empty means random)
 ## ICH9= <boolean>
 ##   (host chipset Q35/ICH9 or i440FX/PIIX3)
 ##
@@ -99,18 +108,18 @@ else
 ## ...and other qemu options.
 ############################################################
 
-#NAME="Enterprise Linux 7"
-#ISO="Springdale_Linux-7.9-x86_64-netinst.iso"
-#IMG="springdale.qcow2"
-RAW="no"
-ICH9="no"
+#NAME="Linux distro"
+#ISO="linux.iso"
+#IMG="disk.qcow2"
+#RAW="yes"
 CPU="2"
 MEM="4G"
-NET="yes"
+#ICH9="yes"
+#AUDIO="yes"
+#NET="no"
 #MAC="52:54:01:23:45:67"
 #VNC=":2"
 #TELNET="2302"
-AUDIO="no"
 #OPT="-display gtk"
 CONFIG
 
@@ -126,15 +135,18 @@ CONFIG
     echo
     echo "Saved in: $(realpath ${CFG})"
     echo "Edit this file and set IMG= and/or ISO="
-    exit 0
+    exit
     ;;
   esac
 
   ## Exit if user chose not to create config file.
-  exit 1
+  echo
+  exit
 fi
 
-echo
+##
+## Config file found.
+##
 echo "Configuration file: $(realpath ${CFG})"
 
 ##
@@ -146,18 +158,19 @@ if [[ ! ${IMG} ]]; then
 
 elif [[ ! -e ${IMG} ]]; then
 
-  echo
   echo "IMG=${IMG}: inaccessible or not found."
-  read -p "Create empty disk image file now? [y/N] " INPUT
-
-  case ${INPUT} in y|Y|[yY][eE][sS])
-    createDiskImage
-    exit 0
-    ;;
-  esac
+  read -sn1 -p "Create empty disk image file now? (y)/n " INPUT
 
   ## Exit if user chose not to create disk image.
-  exit 1
+  case ${INPUT} in n|N|q|Q)
+    echo
+    exit
+  esac
+
+  until [[ ${IMGCREATED} ]]; do 
+    createDiskImage
+  done
+
 fi
 
 ##
@@ -206,17 +219,15 @@ esac
 ##
 ## Audio (default: disabled)
 ##
-case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) SOUND="-device intel-hda -device hda-duplex" ;;
-esac
+case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) SOUND="-device intel-hda -device hda-duplex" ;; esac
 
 ##
 ## Chipset: i440FX+PIIX3 PCI/ISA (default) or Q35+ICH9 PCI-E/AHCI
 ##
-case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine q35" ;;
-esac
+case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine q35" ;; esac
 
 ##
-## Display output and console monitor
+## Video output and console monitor
 ##
 [[ ${VNC} ]] && VIDEO="-vnc ${VNC},to=99,lossy=on,power-control=on"
 [[ ${TELNET} ]] && CONSOLE="-monitor telnet:127.0.0.1:${TELNET},server=on,wait=off"
