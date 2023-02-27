@@ -7,7 +7,6 @@ Quick/QEMU VM launcher
 
 ```
 $ chmod +x qvm
-$ sudo mv qvm /usr/local/bin/
 ```
 
 <br><br>
@@ -15,10 +14,7 @@ $ sudo mv qvm /usr/local/bin/
 ## Usage
 
 ```
-$ qvm
-
-  qvm <configfile> [-qemuopt1 -qemuopt2 ...]
-
+qvm <configfile> [-qemuopt1 -qemuopt2 ...]
 ```
 
 Requires a configuration file as an argument and optionally takes multiple options to pass directly to `qemu`.
@@ -29,16 +25,16 @@ Requires a configuration file as an argument and optionally takes multiple optio
 $ qvm foo
 
 /home/you/foo: configuration file not found.
-Create it now from template? [y/N] y
-
+Create it now from template? y/(n)
 ############################################################
 ## qvm configuration
 ##
 ## Tips:
 ##
 ## NET= <boolean> | bridge0 | br0 | virbr0
-## MAC= <blank> | 52:54:01:23:45:67
-##   (blank/empty means random)
+##   (empty means enabled)
+## MAC= <empty> | 52:54:01:23:45:67
+##   (empty means random)
 ## ICH9= <boolean>
 ##   (host chipset Q35/ICH9 or i440FX/PIIX3)
 ##
@@ -55,18 +51,18 @@ Create it now from template? [y/N] y
 ## ...and other qemu options.
 ############################################################
 
-#NAME="Enterprise Linux 7"
-#ISO="Springdale_Linux-7.9-x86_64-netinst.iso"
-#IMG="springdale.qcow2"
-RAW="no"
-ICH9="no"
+#NAME="Linux distro"
+#ISO="linux.iso"
+#IMG="disk.qcow2"
+#RAW="yes"
 CPU="2"
 MEM="4G"
-NET="yes"
+#ICH9="yes"
+#AUDIO="yes"
+#NET="no"
 #MAC="52:54:01:23:45:67"
 #VNC=":2"
 #TELNET="2302"
-AUDIO="no"
 #OPT="-display gtk"
 
 Saved in: /home/you/foo
@@ -79,11 +75,11 @@ Launches the virtual machine using the configuration file `foo` if available, ot
 
 ```
 $ vim foo
+
 ISO="PeppermintOS-amd64.iso"
 ```
 ```
 $ qvm foo
-
 Configuration file: /home/you/foo
 IMG= disk image file not set.
 
@@ -98,20 +94,23 @@ Boots from the specified `.iso` image. (Good for testing but not suitable for in
 
 ```
 $ vim foo
+
 IMG="peppermint.qcow2"
 ```
 ```
 $ qvm foo
-
 Configuration file: /home/you/foo
-
 IMG=peppermint.qcow2: inaccessible or not found.
-Create empty disk image file now? [y/N] y
-Disk image size: [50G] 
-File format: [qcow2] 
-Name: [peppermint.qcow2] 
-
+Create empty disk image file now? (y)/n
+Disk image size (50G) 
+File format (qcow2) 
+Name (peppermint.qcow2)
+Confirm (y)/n
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
+
+VM name     [foo]
+disk image  [peppermint.qcow2]
+MAC address [52:54:c2:a8:66:f8]
 ```
 
 Starts the VM using the disk image `peppermint.qcow2` if available, otherwise asks to create it.
