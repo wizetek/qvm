@@ -114,7 +114,7 @@ IMG="peppermint.qcow2"
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
 IMG=peppermint.qcow2: inaccessible or not found.
-Create empty disk image file now? (y)/n 
+Create empty disk image file now? or quit (y)/n/q 
 Disk image size (50G) : 
 File format (qcow2)/raw/vdi/vhdx/vmdk : 
 Name (peppermint.qcow2) : 
