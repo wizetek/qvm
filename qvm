@@ -190,7 +190,7 @@ if [[ ! ${IMG} ]]; then
 ## Check if disk image exists and prompt to create it if needed
 elif [[ ! -e ${IMG} ]]; then
   echo "IMG=${IMG}: inaccessible or not found."
-  echo -n "Create empty disk image file now? (y)/n "
+  echo -n "Create empty disk image file now? or quit (y)/n/q "
 
   while true; do
     read -sn1 INPUT
@@ -201,14 +201,16 @@ elif [[ ! -e ${IMG} ]]; then
         echo
         createDiskImage
       done
-
       ## Break out of the prompt loop after success
       break
       ;;
     esac
 
-    ## Exit if user chose not to create disk image
-    case ${INPUT} in n|N) echo; exit ;; esac
+    ## Continue if user chose not to create disk image
+    case ${INPUT} in n|N) IMG=""; echo; break ;; esac
+
+    ## Exit if user chose to quit
+    case ${INPUT} in q|Q) IMG=""; echo; exit ;; esac
 
   done
 fi
