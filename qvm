@@ -9,7 +9,6 @@
 ##
 createDiskImage()
 {
-  echo
   read -p "Disk image size (50G) : " IMGSIZE
   [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
 
@@ -24,12 +23,13 @@ createDiskImage()
     IMG=${IMGNAME}
   fi
 
-  ## Confirm creating disk image.
-  read -sn1 -p "Confirm (y)/n" INPUT
+  ## Confirm creating disk image file.
+  read -sn1 -p "Confirm or quit (y)/n/q " INPUT
+  echo
   case ${INPUT} in n|N) return ;; esac
+  case ${INPUT} in q|Q) exit ;; esac
 
   ## Create disk image or exit on failure.
-  echo
   qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
   IMGCREATED=1
 }
@@ -80,7 +80,7 @@ if [[ -e ${CFG} ]]; then
 else
 
   echo "$(realpath ${CFG}): configuration file not found."
-  read -sn1 -p "Create it now from template? y/(n)" INPUT
+  read -sn1 -p "Create it now from template? y/(n) " INPUT
 
   case ${INPUT} in y|Y) cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
@@ -159,13 +159,11 @@ if [[ ! ${IMG} ]]; then
 elif [[ ! -e ${IMG} ]]; then
 
   echo "IMG=${IMG}: inaccessible or not found."
-  read -sn1 -p "Create empty disk image file now? (y)/n" INPUT
+  read -sn1 -p "Create empty disk image file now? (y)/n " INPUT
+  echo
 
   ## Exit if user chose not to create disk image.
-  case ${INPUT} in n|N|q|Q)
-    echo
-    exit
-  esac
+  case ${INPUT} in n|N) exit ;; esac
 
   until [[ ${IMGCREATED} ]]; do 
     createDiskImage
