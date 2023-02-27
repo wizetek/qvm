@@ -71,11 +71,25 @@ Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
 ```
 
-Attempts to launch the virtual machine using the configuration file `foo` if available, otherwise creates it.
+Attempts to launch the virtual machine using the configuration file `foo` if available, otherwise only creates it.
 
 <br>
 
 #### 2.
+```
+$ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
+Configuration file: /tmp/bar
+IMG= disk image file not set.
+
+VM name     [bar]
+MAC address [52:54:b8:d7:d7:ab]
+```
+
+Boots from the `.iso` image specified on command line using the existing `bar` configuration file in custom path.
+
+<br>
+
+#### 3.
 ```
 $ vim ~/.config/qvm/foo
 ...
@@ -95,11 +109,11 @@ boot from   [PeppermintOS-amd64.iso]
 MAC address [52:54:50:0e:39:ce]
 ```
 
-Boots from the `.iso` image specified in the configuration file. (Good for testing but not suitable for installation without a disk image attached.)
+Boots from the `.iso` image set in the configuration file. (Good for testing but not suitable for installation without a disk image attached – see below.)
 
 <br>
 
-#### 3.
+#### 4.
 ```
 $ vim foo
 ...
@@ -128,17 +142,3 @@ MAC address [52:54:c2:a8:66:f8]
 ```
 
 Boots from the `.iso` and provides the `.qcow2` disk image or asks to create it first.
-
-<br>
-
-#### 4.
-```
-$ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
-Configuration file: /tmp/bar
-IMG= disk image file not set.
-
-VM name     [bar]
-MAC address [52:54:b8:d7:d7:ab]
-```
-
-Boots from the `.iso` specified on command line using the existing `bar` configuration file in custom path.
