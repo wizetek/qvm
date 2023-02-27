@@ -23,7 +23,7 @@ Requires a configuration file as an argument and optionally takes multiple optio
 
 ## Examples
 
-(1)
+#### 1.
 ```
 $ qvm foo
 /home/you/foo: configuration file not found.
@@ -74,7 +74,7 @@ Launches the virtual machine using the configuration file `foo` if available, ot
 
 <br>
 
-(2)
+#### 2.
 ```
 $ vim foo
 ...
@@ -97,7 +97,7 @@ Boots from the specified `.iso` image. (Good for testing but not suitable for in
 
 <br>
 
-(3)
+#### 3.
 ```
 $ vim foo
 ...
@@ -112,7 +112,7 @@ Configuration file: /home/you/foo
 IMG=peppermint.qcow2: inaccessible or not found.
 Create empty disk image file now? (y)/n
 Disk image size (50G) : 
-File format (qcow2) : 
+File format (qcow2)/raw/vdi/vhdx/vmdk : 
 Name (peppermint.qcow2) : 
 Confirm (y)/n
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
