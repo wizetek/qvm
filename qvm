@@ -81,6 +81,7 @@ else
 
   echo "$(realpath ${CFG}): configuration file not found."
   read -sn1 -p "Create it now from template? y/(n) " INPUT
+  echo
 
   case ${INPUT} in y|Y) cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
@@ -125,7 +126,6 @@ CONFIG
 
     ## Exit on write failure to config file.
     if [[ $? != 0 ]]; then
-      echo
       echo "$(realpath ${CFG}): write failed."
       exit 1
     fi
@@ -140,7 +140,6 @@ CONFIG
   esac
 
   ## Exit if user chose not to create config file.
-  echo
   exit
 fi
 
