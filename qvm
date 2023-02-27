@@ -159,7 +159,7 @@ if [[ ! ${IMG} ]]; then
 elif [[ ! -e ${IMG} ]]; then
 
   echo "IMG=${IMG}: inaccessible or not found."
-  read -sn1 -p "Create empty disk image file now? (y)/n " INPUT
+  read -sn1 -p "Create empty disk image file now? (y)/n" INPUT
 
   ## Exit if user chose not to create disk image.
   case ${INPUT} in n|N|q|Q)
