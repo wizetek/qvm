@@ -26,9 +26,8 @@ Requires a configuration file as an argument and optionally takes multiple optio
 #### 1.
 ```
 $ qvm foo
-/home/you/foo: configuration file not found.
+/home/you/.config/qvm/foo: configuration file not found.
 Create it now from template? y/(n)
-
 ############################################################
 ## qvm configuration
 ##
@@ -53,7 +52,7 @@ Create it now from template? y/(n)
 ## -daemonize
 ## ...and other qemu options.
 ############################################################
-
+#
 #NAME="Linux distro"
 #ISO="linux.iso"
 #IMG="disk.qcow2"
@@ -68,25 +67,27 @@ MEM="4G"
 #TELNET="2302"
 #OPT="-display gtk"
 
-Saved in: /home/you/foo
+Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
 ```
-Launches the virtual machine using the configuration file `foo` if available, otherwise creates it.
+
+Attempts to launch the virtual machine using the configuration file `foo` if available, otherwise creates it.
 
 <br>
 
 #### 2.
 ```
-$ vim foo
+$ vim ~/.config/qvm/foo
 ...
 ...
 ISO="PeppermintOS-amd64.iso"
 ...
 ...
 ```
+
 ```
 $ qvm foo
-Configuration file: /home/you/foo
+Configuration file: /home/you/.config/qvm/foo
 IMG= disk image file not set.
 
 VM name     [foo]
@@ -94,7 +95,7 @@ boot from   [PeppermintOS-amd64.iso]
 MAC address [52:54:50:0e:39:ce]
 ```
 
-Boots from the specified `.iso` image. (Good for testing but not suitable for installation without a disk image attached.)
+Boots from the `.iso` image specified in the configuration file. (Good for testing but not suitable for installation without a disk image attached.)
 
 <br>
 
@@ -103,13 +104,15 @@ Boots from the specified `.iso` image. (Good for testing but not suitable for in
 $ vim foo
 ...
 ...
+ISO="PeppermintOS-amd64.iso"
 IMG="peppermint.qcow2"
 ...
 ...
 ```
+
 ```
 $ qvm foo
-Configuration file: /home/you/foo
+Configuration file: /home/you/.config/qvm/foo
 IMG=peppermint.qcow2: inaccessible or not found.
 Create empty disk image file now? (y)/n 
 Disk image size (50G) : 
@@ -119,8 +122,23 @@ Confirm or quit (y)/n/q
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
 VM name     [foo]
+boot from   [PeppermintOS-amd64.iso]
 disk image  [peppermint.qcow2]
 MAC address [52:54:c2:a8:66:f8]
 ```
 
-Starts the VM using the disk image `peppermint.qcow2` if available, otherwise asks to create it.
+Boots from the `.iso` and provides the `.qcow2` disk image or asks to create it first.
+
+<br>
+
+#### 4.
+```
+$ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
+Configuration file: /tmp/bar
+IMG= disk image file not set.
+
+VM name     [bar]
+MAC address [52:54:b8:d7:d7:ab]
+```
+
+Boots from the `.iso` specified on command line using the existing `bar` configuration file in custom path.
