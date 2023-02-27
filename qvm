@@ -1,89 +1,14 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/02/26
+## 2022/11/25-2023/02/27
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
-## Function to create disk image
+## Function to create config file
 ##
-createDiskImage()
-{
-  read -p "Disk image size (50G) : " IMGSIZE
-  [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
-
-  read -p "File format (qcow2)/raw/vdi/vhdx/vmdk : " IMGFORMAT
-  [[ ! ${IMGFORMAT} ]] && IMGFORMAT=qcow2
-
-  read -p "Name (${IMG}) : " IMGNAME
-
-  ## User chose disk image name different from config.
-  if [[ ${IMGNAME} ]]; then
-    echo "IMG=${IMG} in configuration file. Edit to set IMG=${IMGNAME}"
-    IMG=${IMGNAME}
-  fi
-
-  ## Confirm creating disk image file.
-  read -sn1 -p "Confirm or quit (y)/n/q " INPUT
-  echo
-  case ${INPUT} in n|N) return ;; esac
-  case ${INPUT} in q|Q) exit ;; esac
-
-  ## Create disk image or exit on failure.
-  qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
-  IMGCREATED=1
-}
-
-##
-## Variables for version, command, config file, and extra arguments
-##
-VER="1.0.1"
-CMD="$(basename ${0})"
-CFG="${1}"
-shift
-ARG="${@}"
-
-##
-## If no (valid) arguments are provided, show usage.
-##
-case ${CFG} in ""|-*) cat << USAGE
-${CMD} ${VER}
-
-usage:
-
-  ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
-
-USAGE
-  exit
-esac
-
-##
-## Read config file if available, readable, and correct type.
-##
-if [[ -e ${CFG} ]]; then
-
-  if [[ ! -r ${CFG} ]]; then
-    echo "$(realpath ${CFG}): unreadable configuration file."
-    exit 1
-  fi
-
-  if [[ $(file -b ${CFG}) != "ASCII text" ]]; then
-    echo "$(realpath ${CFG}): invalid configuration file."
-    exit 1
-  fi
-
-  source ${CFG}
-
-##
-## Prompt to create config file if not found.
-##
-else
-
-  echo "$(realpath ${CFG}): configuration file not found."
-  read -sn1 -p "Create it now from template? y/(n) " INPUT
-  echo
-
-  case ${INPUT} in y|Y) cat 2>/dev/null 1>${CFG} << CONFIG
+createConfigFile() {
+  cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
 ## ${CMD} configuration
 ##
@@ -106,9 +31,9 @@ else
 ## -display gtk,gl=on,window-close=off
 ## -device VGA,edid=on,xres=1366,yres=768
 ## -daemonize
-## ...and other qemu options.
+## ...and other qemu options
 ############################################################
-
+#
 #NAME="Linux distro"
 #ISO="linux.iso"
 #IMG="disk.qcow2"
@@ -123,55 +48,173 @@ MEM="4G"
 #TELNET="2302"
 #OPT="-display gtk"
 CONFIG
+}
 
-    ## Exit on write failure to config file.
-    if [[ $? != 0 ]]; then
-      echo "$(realpath ${CFG}): write failed."
-      exit 1
-    fi
+##
+## Function to create disk image interactively
+##
+createDiskImage() {
+  read -p "Disk image size (50G) : " IMGSIZE
+  [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
 
-    echo
-    cat ${CFG}
-    echo
-    echo "Saved in: $(realpath ${CFG})"
-    echo "Edit this file and set IMG= and/or ISO="
-    exit
-    ;;
-  esac
+  read -p "File format (qcow2)/raw/vdi/vhdx/vmdk : " IMGFORMAT
+  [[ ! ${IMGFORMAT} ]] && IMGFORMAT=qcow2
 
-  ## Exit if user chose not to create config file.
+  read -p "Name (${IMG}) : " IMGNAME
+
+  ## User chose disk image name different from what is set in config
+  if [[ ${IMGNAME} ]]; then
+    echo "IMG=${IMG} in configuration file. Edit to set IMG=${IMGNAME}"
+    IMG=${IMGNAME}
+  fi
+
+  ## Confirmation before creating disk image
+  echo -n "Confirm or quit (y)/n/q "
+  while true; do
+    read -sn1 INPUT
+    case ${INPUT} in y|Y|"") echo; break ;; esac
+    case ${INPUT} in n|N) return ;; esac
+    case ${INPUT} in q|Q) echo; exit ;; esac
+  done
+
+  ## Create disk image or exit on failure
+  qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
+
+  ## Set success flag
+  IMGCREATED=1
+}
+
+##
+## Variables for version, command, config dir/file, and user provided arguments
+##
+VER="1.0.2"
+CMD="$(basename ${0})"
+CFGDIR="${HOME}/.config/${CMD}" 
+CFG="${1}"
+shift
+ARG="${@}"
+
+##
+## If no (valid) arguments are provided, show usage and exit
+##
+case ${CFG} in ""|-*) cat << USAGE
+${CMD} ${VER}
+
+usage:
+
+  ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
+
+USAGE
+
   exit
+  ;;
+esac
+
+##
+## If slash is not detected in config file path, use predefined directory
+##
+if [[ ${CFG} != *"/"* ]]; then
+  CFG="${CFGDIR}/${CFG}" 
+
+  ## Create directory structure for config files if needed or exit on failure
+  if [[ ! -d "${CFGDIR}" ]]; then
+    mkdir -p "${CFGDIR}" || exit 1
+  fi
 fi
 
 ##
-## Config file found.
+## Check if config file exists
+##
+if [[ -e ${CFG} ]]; then
+
+  ## Exit if config file is not readable
+  if [[ ! -r ${CFG} ]]; then
+    echo "$(realpath ${CFG}): unreadable configuration file."
+    exit 1
+  fi
+
+  ## Exit if config file is not the correct type
+  if [[ $(file -b ${CFG}) != "ASCII text" ]]; then
+    echo "$(realpath ${CFG}): invalid configuration file."
+    exit 1
+  fi
+
+  ## Read config file
+  source ${CFG}
+
+## Prompt to create config file if not found
+else
+  echo "$(realpath ${CFG}): configuration file not found."
+  echo -n "Create it now from template? y/(n) "
+
+  while true; do
+    read -sn1 INPUT
+
+    case ${INPUT} in y|Y)
+      createConfigFile
+
+      ## Check function's exit status and exit on write failure to config file
+      if [[ $? != 0 ]]; then
+        echo
+        echo "$(realpath ${CFG}): write failed."
+        exit 1
+      fi
+
+      ## Show config file contents and path, then exit
+      echo
+      cat ${CFG}
+      echo
+      echo "Saved in: $(realpath ${CFG})"
+      echo "Edit this file and set IMG= and/or ISO="
+      exit
+      ;;
+    esac
+
+    ## Exit if user chose not to create config file
+    case ${INPUT} in n|N|"") echo; exit ;; esac
+
+  done
+fi
+
+##
+## Show path to config file on startup
 ##
 echo "Configuration file: $(realpath ${CFG})"
 
 ##
-## Check if disk image is defined and found, prompt to create if needed.
+## Check if disk image is defined
 ##
 if [[ ! ${IMG} ]]; then
-
   echo "IMG= disk image file not set."
 
+## Check if disk image exists and prompt to create it if needed
 elif [[ ! -e ${IMG} ]]; then
-
   echo "IMG=${IMG}: inaccessible or not found."
-  read -sn1 -p "Create empty disk image file now? (y)/n " INPUT
-  echo
+  echo -n "Create empty disk image file now? (y)/n "
 
-  ## Exit if user chose not to create disk image.
-  case ${INPUT} in n|N) exit ;; esac
+  while true; do
+    read -sn1 INPUT
 
-  until [[ ${IMGCREATED} ]]; do 
-    createDiskImage
+    ## Call function to create disk image until success flag is set
+    case ${INPUT} in y|Y|"")
+      until [[ ${IMGCREATED} ]]; do
+        echo
+        createDiskImage
+      done
+
+      ## Break out of the prompt loop after success
+      break
+      ;;
+    esac
+
+    ## Exit if user chose not to create disk image
+    case ${INPUT} in n|N) echo; exit ;; esac
+
   done
-
 fi
 
 ##
-## Check if RAW disk image format is set.
+## Check if RAW disk image format is set
 ##
 if [[ ${IMG} ]]; then
 
@@ -183,7 +226,7 @@ if [[ ${IMG} ]]; then
 fi
 
 ##
-## Boot from ISO if defined and found.
+## Boot from ISO if defined and found
 ##
 if [[ ${ISO} ]]; then
 
@@ -206,7 +249,7 @@ case ${NET} in
   ;;
 
   *)
-    ## Generate random MAC address if not defined in config.
+    ## Generate random MAC address if not defined in config
     [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
     NIC="-nic mac=${MAC}"
   ;;
@@ -230,14 +273,14 @@ case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine 
 [[ ${TELNET} ]] && CONSOLE="-monitor telnet:127.0.0.1:${TELNET},server=on,wait=off"
 
 ##
-## Check config for missing settings and set defaults if needed.
+## Check config for missing settings and set defaults if needed
 ##
 [[ ! ${NAME} ]] && NAME="$(basename ${CFG})"
 [[ ! ${CPU} ]] && CPU=1
 [[ ! ${MEM} ]] && MEM=2G
 
 ##
-## Show some relevant VM information on startup.
+## Show some relevant VM information on startup
 ##
 echo
 echo                   "VM name     [${NAME}]"
@@ -245,7 +288,7 @@ echo                   "VM name     [${NAME}]"
 [[ ${IMG} ]] && echo   "disk image  [$(basename ${IMG})]"
 [[ ${SOUND} ]] && echo "audio       [enabled]"
 
-## Only show MAC address if defined and if network is enabled.
+## Only show MAC address if defined and if network is enabled
 if [[ ${NIC} == "-nic none" ]]; then echo "network     [disabled]"
 else
   [[ ${NIC} == "-nic bridge"* ]] && echo  "network     [bridge]"
@@ -256,7 +299,7 @@ fi
 [[ ${VNC} ]] && echo    "VNC         [${VNC}]"
 
 ##
-## Launch!
+## Finally launch QEMU
 ##
 qemu-system-x86_64 \
 -name "${NAME}" \
