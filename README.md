@@ -1,7 +1,7 @@
 # qvm
 Quick/QEMU VM launcher
 
-<br><br>
+<br>
 
 ## Installation
 
@@ -9,7 +9,7 @@ Quick/QEMU VM launcher
 $ chmod +x qvm
 ```
 
-<br><br>
+<br>
 
 ## Usage
 
@@ -19,11 +19,13 @@ qvm <configfile> [-qemuopt1 -qemuopt2 ...]
 
 Requires a configuration file as an argument and optionally takes multiple options to pass directly to `qemu`.
 
-<br><br>
+<br>
 
+## Examples
+
+(1)
 ```
 $ qvm foo
-
 /home/you/foo: configuration file not found.
 Create it now from template? y/(n)
 ############################################################
@@ -68,15 +70,17 @@ MEM="4G"
 Saved in: /home/you/foo
 Edit this file and set IMG= and/or ISO=
 ```
-
 Launches the virtual machine using the configuration file `foo` if available, otherwise creates it.
 
-<br><br>
+<br>
 
+(2)
 ```
 $ vim foo
 ...
+...
 ISO="PeppermintOS-amd64.iso"
+...
 ...
 ```
 ```
@@ -91,12 +95,15 @@ MAC address [52:54:50:0e:39:ce]
 
 Boots from the specified `.iso` image. (Good for testing but not suitable for installation without a disk image attached.)
 
-<br><br>
+<br>
 
+(3)
 ```
 $ vim foo
 ...
+...
 IMG="peppermint.qcow2"
+...
 ...
 ```
 ```
