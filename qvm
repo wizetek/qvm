@@ -69,7 +69,7 @@ createDiskImage() {
   fi
 
   ## Confirmation before creating disk image
-  echo -n "Confirm or quit (y)/n/q "
+  echo -n "Create now, start over, or quit? (y)/n/q "
   while true; do
     read -sn1 INPUT
     case ${INPUT} in y|Y|"") echo; break ;; esac
@@ -129,13 +129,13 @@ if [[ -e ${CFG} ]]; then
 
   ## Exit if config file is not readable
   if [[ ! -r ${CFG} ]]; then
-    echo "$(realpath ${CFG}): unreadable configuration file."
+    echo "$(realpath ${CFG}): Unreadable configuration file"
     exit 1
   fi
 
   ## Exit if config file is not the correct type
   if [[ $(file -b ${CFG}) != "ASCII text" ]]; then
-    echo "$(realpath ${CFG}): invalid configuration file."
+    echo "$(realpath ${CFG}): Invalid configuration file"
     exit 1
   fi
 
@@ -144,7 +144,7 @@ if [[ -e ${CFG} ]]; then
 
 ## Prompt to create config file if not found
 else
-  echo "$(realpath ${CFG}): configuration file not found."
+  echo "$(realpath ${CFG}): Configuration file not found"
   echo -n "Create it now from template? y/(n) "
 
   while true; do
@@ -156,7 +156,7 @@ else
       ## Check function's exit status and exit on write failure to config file
       if [[ $? != 0 ]]; then
         echo
-        echo "$(realpath ${CFG}): write failed."
+        echo "$(realpath ${CFG}): Write operation failed"
         exit 1
       fi
 
@@ -185,12 +185,12 @@ echo "Configuration file: $(realpath ${CFG})"
 ## Check if disk image is defined
 ##
 if [[ ! ${IMG} ]]; then
-  echo "IMG= disk image file not set."
+  echo "IMG= Disk image file not set"
 
 ## Check if disk image exists and prompt to create it if needed
 elif [[ ! -e ${IMG} ]]; then
-  echo "IMG=${IMG}: inaccessible or not found."
-  echo -n "Create empty disk image file now? or quit (y)/n/q "
+  echo "IMG=${IMG}: Inaccessible or not found"
+  echo -n "Create empty disk image file, continue, or quit? (y)/n/q "
 
   while true; do
     read -sn1 INPUT
@@ -233,7 +233,7 @@ fi
 if [[ ${ISO} ]]; then
 
   if [[ -e ${ISO} ]]; then CDROM="-boot d -cdrom ${ISO}"
-  else echo "ISO=${ISO}: inaccessible or not found. (ignored)"
+  else echo "ISO=${ISO}: Inaccessible or not found (ignored)"
   fi
 
 fi
