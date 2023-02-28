@@ -210,7 +210,7 @@ elif [[ ! -e ${IMG} ]]; then
     case ${INPUT} in n|N) IMG=""; echo; break ;; esac
 
     ## Exit if user chose to quit
-    case ${INPUT} in q|Q) IMG=""; echo; exit ;; esac
+    case ${INPUT} in q|Q) echo; exit ;; esac
 
   done
 fi
