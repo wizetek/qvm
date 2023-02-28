@@ -69,7 +69,7 @@ createDiskImage() {
   fi
 
   ## Confirmation before creating disk image
-  echo -n "Create disk file now? (y)/n/q "
+  echo -n "Create this disk file now? (y)/n/q "
   while true; do
     read -sn1 INPUT
     case ${INPUT} in y|Y|"") echo; break ;; esac
