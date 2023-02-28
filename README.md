@@ -26,7 +26,7 @@ Requires a configuration file as an argument and optionally takes multiple optio
 #### 1.
 ```
 $ qvm foo
-/home/you/.config/qvm/foo: configuration file not found.
+/home/you/.config/qvm/foo: Configuration file not found
 Create it now from template? y/(n)
 ############################################################
 ## qvm configuration
@@ -79,7 +79,7 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 ```
 $ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /tmp/bar
-IMG= disk image file not set.
+IMG= Disk image file not set
 
 VM name     [bar]
 MAC address [52:54:b8:d7:d7:ab]
@@ -102,7 +102,7 @@ ISO="PeppermintOS-amd64.iso"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
-IMG= disk image file not set.
+IMG= Disk image file not set
 
 VM name     [foo]
 boot from   [PeppermintOS-amd64.iso]
@@ -127,12 +127,12 @@ IMG="peppermint.qcow2"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
-IMG=peppermint.qcow2: inaccessible or not found.
-Create empty disk image file now? or quit (y)/n/q 
+IMG=peppermint.qcow2: Inaccessible or not found
+Create empty disk image file, continue, or quit? (y)/n/q 
 Disk image size (50G) : 
 File format (qcow2)/raw/vdi/vhdx/vmdk : 
 Name (peppermint.qcow2) : 
-Confirm or quit (y)/n/q 
+Create now, start over, or quit? (y)/n/q 
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
 VM name     [foo]
