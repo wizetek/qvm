@@ -190,7 +190,7 @@ if [[ ! ${IMG} ]]; then
 ## Check if disk image exists and prompt to create it if needed
 elif [[ ! -e ${IMG} ]]; then
   echo "IMG=${IMG}: Inaccessible or not found"
-  echo -n "Configure disk image? (y)/n/q "
+  echo -n "Prepare disk image? (y)/n/q "
 
   while true; do
     read -sn1 INPUT
