@@ -134,7 +134,6 @@ Boots from the `.iso` and provides the `.qcow2` disk image or asks to create it 
 ```
 $ qvm test -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /home/you/.config/qvm/test
-Neither ISO= nor IMG= disk image set
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
@@ -148,7 +147,6 @@ Boots from the `.iso` file specified on command line using the existing `test` c
 ```
 $ qvm /tmp/temp -hda disk.qcow2
 Configuration file: /tmp/temp
-Neither ISO= nor IMG= disk image set
 
 VM name     [temp]
 MAC address [52:54:b8:d7:d7:ab]
