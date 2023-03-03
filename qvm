@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/02/28
+## 2022/11/25-2023/03/02
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -43,10 +43,10 @@ MEM="4G"
 #ICH9="yes"
 #AUDIO="yes"
 #NET="no"
-#MAC="52:54:01:23:45:67"
+#MAC="52:54:de:ad:be:ef"
 #VNC=":2"
 #TELNET="2302"
-#OPT="-display gtk"
+#OPT="-usb -device usb-tablet"
 CONFIG
 }
 
@@ -62,7 +62,7 @@ createDiskImage() {
 
   read -p "Name (${IMG}) : " IMGNAME
 
-  ## User chose disk image name different from what is set in config
+  ## User chose disk image name different from what is defined in config
   if [[ ${IMGNAME} ]]; then
     echo "IMG=${IMG} in configuration file. Edit to set IMG=${IMGNAME}"
     IMG=${IMGNAME}
@@ -87,7 +87,7 @@ createDiskImage() {
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.2"
+VER="1.0.3"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -176,19 +176,16 @@ else
   done
 fi
 
-##
 ## Show path to config file on startup
-##
 echo "Configuration file: $(realpath ${CFG})"
 
-##
-## Check if disk image is defined
-##
-if [[ ! ${IMG} ]]; then
-  echo "IMG= Disk image file not set"
+## Warn if neither ISO nor disk image is defined in config
+[[ ! ${ISO} && ! ${IMG} ]] && echo "Neither ISO= nor IMG= disk image set"
 
+##
 ## Check if disk image exists and prompt to create it if needed
-elif [[ ! -e ${IMG} ]]; then
+##
+if [[ ${IMG} && ! -e ${IMG} ]]; then
   echo "IMG=${IMG}: Inaccessible or not found"
   echo -n "Prepare disk image? (y)/n/q "
 
@@ -228,12 +225,12 @@ if [[ ${IMG} ]]; then
 fi
 
 ##
-## Boot from ISO if defined and found
+## Boot from ISO if defined in config and found
 ##
 if [[ ${ISO} ]]; then
 
   if [[ -e ${ISO} ]]; then CDROM="-boot d -cdrom ${ISO}"
-  else echo "ISO=${ISO}: Inaccessible or not found (ignored)"
+  else echo "ISO=${ISO}: Inaccessible or not found"
   fi
 
 fi
@@ -290,7 +287,7 @@ echo                   "VM name     [${NAME}]"
 [[ ${IMG} ]] && echo   "disk image  [$(basename ${IMG})]"
 [[ ${SOUND} ]] && echo "audio       [enabled]"
 
-## Only show MAC address if defined and if network is enabled
+## Only show MAC address if defined in config and if network is enabled
 if [[ ${NIC} == "-nic none" ]]; then echo "network     [disabled]"
 else
   [[ ${NIC} == "-nic bridge"* ]] && echo  "network     [bridge]"
