@@ -79,7 +79,7 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 ```
 $ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /tmp/bar
-IMG= Disk image file not set
+Neither ISO= nor IMG= disk image set
 
 VM name     [bar]
 MAC address [52:54:b8:d7:d7:ab]
@@ -102,7 +102,6 @@ ISO="PeppermintOS-amd64.iso"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
-IMG= Disk image file not set
 
 VM name     [foo]
 boot from   [PeppermintOS-amd64.iso]
