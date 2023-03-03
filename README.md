@@ -145,11 +145,11 @@ Boots from the `.iso` file specified on command line using the existing `test` c
 
 #### 5.
 ```
-$ qvm /tmp/temp -hda disk.qcow2
-Configuration file: /tmp/temp
+$ qvm /tmp/test -hda disk.qcow2
+Configuration file: /tmp/test
 
-VM name     [temp]
+VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
 ```
 
-Boots up the `.qcow2` disk image and uses configuration in custom path `/tmp/temp`.
+Boots up the `.qcow2` disk image and uses configuration in custom path `/tmp/test`.
