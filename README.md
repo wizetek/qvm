@@ -65,7 +65,7 @@ MEM="4G"
 #MAC="52:54:01:23:45:67"
 #VNC=":2"
 #TELNET="2302"
-#OPT="-display gtk"
+#OPT="-usb -device usb-tablet"
 
 Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
