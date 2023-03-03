@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/03/02
+## 2022/11/25-2023/03/03
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
 ## Function to create config file
 ##
 createConfigFile() {
-  cat 2>/dev/null 1>${CFG} << CONFIG
+
+cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
 ## ${CMD} configuration
 ##
@@ -48,17 +49,21 @@ MEM="4G"
 #TELNET="2302"
 #OPT="-usb -device usb-tablet"
 CONFIG
+
+## Store exit code
+CFGSTATUS=${?}
 }
 
 ##
 ## Function to create disk image interactively
 ##
 createDiskImage() {
+
   read -p "Disk image size (50G) : " IMGSIZE
-  [[ ! ${IMGSIZE} ]] && IMGSIZE=50G
+  [[ ! ${IMGSIZE} ]] && IMGSIZE="50G"
 
   read -p "File format (qcow2)/raw/vdi/vhdx/vmdk : " IMGFORMAT
-  [[ ! ${IMGFORMAT} ]] && IMGFORMAT=qcow2
+  [[ ! ${IMGFORMAT} ]] && IMGFORMAT="qcow2"
 
   read -p "Name (${IMG}) : " IMGNAME
 
@@ -68,12 +73,13 @@ createDiskImage() {
     IMG=${IMGNAME}
   fi
 
-  ## Confirmation before creating disk image
-  echo -n "Create this disk file now? (y)/n/q "
+  ## Prompt to confirm or redo creating disk image
+  echo -n "Create/reconfigure/quit? (y)/n/q "
+
   while true; do
     read -sn1 INPUT
-    case ${INPUT} in y|Y|"") echo; break ;; esac
-    case ${INPUT} in n|N) return ;; esac
+    case ${INPUT} in y|Y|c|C|"") echo; break ;; esac
+    case ${INPUT} in n|N|r|R) return ;; esac
     case ${INPUT} in q|Q) echo; exit ;; esac
   done
 
@@ -81,13 +87,13 @@ createDiskImage() {
   qemu-img create -f ${IMGFORMAT} "${IMG}" ${IMGSIZE} || exit 1
 
   ## Set success flag
-  IMGCREATED=1
+  IMGSTATUS=1
 }
 
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.3"
+VER="1.0.4"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -105,21 +111,21 @@ usage:
   ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
 
 USAGE
-
-  exit
-  ;;
+exit ;;
 esac
 
 ##
 ## If slash is not detected in config file path, use predefined directory
 ##
 if [[ ${CFG} != *"/"* ]]; then
+
   CFG="${CFGDIR}/${CFG}" 
 
   ## Create directory structure for config files if needed or exit on failure
   if [[ ! -d "${CFGDIR}" ]]; then
     mkdir -p "${CFGDIR}" || exit 1
   fi
+
 fi
 
 ##
@@ -139,11 +145,11 @@ if [[ -e ${CFG} ]]; then
     exit 1
   fi
 
-  ## Read config file
+  ## Checks passed, read config file
   source ${CFG}
 
-## Prompt to create config file if not found
 else
+  ## Prompt to create config file if not found
   echo "$(realpath ${CFG}): Configuration file not found"
   echo -n "Create it now from template? y/(n) "
 
@@ -151,12 +157,13 @@ else
     read -sn1 INPUT
 
     case ${INPUT} in y|Y)
+      ## Call function to create config file
       createConfigFile
 
-      ## Check function's exit status and exit on write failure to config file
-      if [[ $? != 0 ]]; then
+      ## Check function's exit code and exit on write failure to config file
+      if [[ ${CFGSTATUS} != 0 ]]; then
         echo
-        echo "$(realpath ${CFG}): Write operation failed"
+        echo "Cannot write to $(realpath ${CFG})"
         exit 1
       fi
 
@@ -166,41 +173,51 @@ else
       echo
       echo "Saved in: $(realpath ${CFG})"
       echo "Edit this file and set IMG= and/or ISO="
-      exit
-      ;;
+      exit ;;
     esac
 
     ## Exit if user chose not to create config file
     case ${INPUT} in n|N|"") echo; exit ;; esac
-
   done
 fi
 
 ## Show path to config file on startup
 echo "Configuration file: $(realpath ${CFG})"
 
-## Warn if neither ISO nor disk image is defined in config
-[[ ! ${ISO} && ! ${IMG} ]] && echo "Neither ISO= nor IMG= disk image set"
+##
+## Prompt to continue if both ISO and disk image are not defined in config, and no CLI arguments are provided
+##
+if [[ ! ${ISO} && ! ${IMG} && ! ${ARG} ]]; then
+
+  echo "Neither ISO= nor IMG= disk image set"
+  echo -n "Continue? y/(n) "
+
+  while true; do
+    read -sn1 INPUT
+    case ${INPUT} in y|Y) echo; break ;; esac
+    case ${INPUT} in n|N|"") echo; exit ;; esac
+  done
+
+fi
 
 ##
-## Check if disk image exists and prompt to create it if needed
+## Check if disk image is defined in config and exists
 ##
 if [[ ${IMG} && ! -e ${IMG} ]]; then
+
+  ## Prompt to create disk image
   echo "IMG=${IMG}: Inaccessible or not found"
   echo -n "Prepare disk image? (y)/n/q "
 
   while true; do
     read -sn1 INPUT
 
-    ## Call function to create disk image until success flag is set
     case ${INPUT} in y|Y|"")
-      until [[ ${IMGCREATED} ]]; do
-        echo
-        createDiskImage
-      done
+      ## Call function to create disk image until success flag is set
+      until [[ ${IMGSTATUS} ]]; do echo; createDiskImage; done
+
       ## Break out of the prompt loop after success
-      break
-      ;;
+      break ;;
     esac
 
     ## Continue if user chose not to create disk image
@@ -208,7 +225,6 @@ if [[ ${IMG} && ! -e ${IMG} ]]; then
 
     ## Exit if user chose to quit
     case ${INPUT} in q|Q) echo; exit ;; esac
-
   done
 fi
 
@@ -225,12 +241,27 @@ if [[ ${IMG} ]]; then
 fi
 
 ##
-## Boot from ISO if defined in config and found
+## Check if ISO is defined in config and exists
 ##
 if [[ ${ISO} ]]; then
 
-  if [[ -e ${ISO} ]]; then CDROM="-boot d -cdrom ${ISO}"
-  else echo "ISO=${ISO}: Inaccessible or not found"
+  if [[ ! -e ${ISO} ]]; then
+    echo "ISO=${ISO}: Inaccessible or not found"
+
+    ## Prompt to continue if no valid ISO and no disk image are defined in config
+    if [[ ! ${IMG} ]]; then
+      echo -n "Continue? y/(n) "
+
+      while true; do
+        read -sn1 INPUT
+        case ${INPUT} in y|Y) echo; break ;; esac
+        case ${INPUT} in n|N|"") echo; exit ;; esac
+      done
+    fi
+
+  ## Set to boot from ISO
+  else CDROM="-boot d -cdrom ${ISO}"
+
   fi
 
 fi
