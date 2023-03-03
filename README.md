@@ -77,20 +77,6 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 
 #### 2.
 ```
-$ qvm /tmp/bar -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
-Configuration file: /tmp/bar
-Neither ISO= nor IMG= disk image set
-
-VM name     [bar]
-MAC address [52:54:b8:d7:d7:ab]
-```
-
-Boots from the `.iso` image specified on command line using the existing `bar` configuration file in custom path.
-
-<br>
-
-#### 3.
-```
 $ vim ~/.config/qvm/foo
 ...
 ...
@@ -112,7 +98,7 @@ Boots from the `.iso` image set in the configuration file. (Good for testing but
 
 <br>
 
-#### 4.
+#### 3.
 ```
 $ vim foo
 ...
@@ -141,3 +127,31 @@ MAC address [52:54:c2:a8:66:f8]
 ```
 
 Boots from the `.iso` and provides the `.qcow2` disk image or asks to create it first.
+
+<br>
+
+#### 4.
+```
+$ qvm test -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
+Configuration file: /home/you/.config/qvm/test
+Neither ISO= nor IMG= disk image set
+
+VM name     [test]
+MAC address [52:54:b8:d7:d7:ab]
+```
+
+Boots from the `.iso` file specified on command line using the existing `test` configuration file (with no disk images set).
+
+<br>
+
+#### 5.
+```
+$ qvm /tmp/temp -hda disk.qcow2
+Configuration file: /tmp/temp
+Neither ISO= nor IMG= disk image set
+
+VM name     [temp]
+MAC address [52:54:b8:d7:d7:ab]
+```
+
+Boots up the `.qcow2` disk image and uses configuration in custom path `/tmp/temp`.
