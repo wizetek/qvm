@@ -74,7 +74,7 @@ createDiskImage() {
   fi
 
   ## Prompt to confirm or redo creating disk image
-  echo -n "Create, reconfigure, quit? (y)/n/q "
+  echo -n "Create, redo, quit? (y)/n/q "
 
   while true; do
     read -sn1 INPUT
