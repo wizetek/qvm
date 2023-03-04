@@ -345,7 +345,7 @@ case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine 
 echo
 echo                   "VM name     [${NAME}]"
 [[ ${CDROM} ]] && echo "boot from   [$(basename ${ISO})]"
-[[ ${IMG} ]] && echo   "disk image  [$(basename ${IMG})]"
+[[ ${IMG} ]] && echo   "disk image  [$(basename "${IMG}")]"
 [[ ${SOUND} ]] && echo "audio       [enabled]"
 
 ## Only show MAC address if defined in config and if network is enabled
