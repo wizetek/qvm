@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/03/03
+## 2022/11/25-2023/03/04
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -74,7 +74,7 @@ createDiskImage() {
   fi
 
   ## Prompt to confirm or redo creating disk image
-  echo -n "Create, redo, quit? (y)/n/q "
+  echo -n "Create now? or redo/quit (y)/n/q "
 
   while true; do
     read -sn1 INPUT
