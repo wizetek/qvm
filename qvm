@@ -78,9 +78,13 @@ createDiskImage() {
 
   while true; do
     read -sn1 INPUT
-    case ${INPUT} in y|Y|c|C|"") echo; break ;; esac
-    case ${INPUT} in n|N|r|R) return ;; esac
-    case ${INPUT} in q|Q) echo; exit ;; esac
+
+    case ${INPUT} in
+      y|Y|c|C|"") echo; break ;;
+      n|N|r|R) return ;;
+      q|Q) echo; exit ;;
+    esac
+
   done
 
   ## Create disk image or exit on failure
@@ -93,7 +97,7 @@ createDiskImage() {
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.4"
+VER="1.0.5"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -156,7 +160,9 @@ else
   while true; do
     read -sn1 INPUT
 
-    case ${INPUT} in y|Y)
+    case ${INPUT} in
+
+      y|Y)
       ## Call function to create config file
       createConfigFile
 
@@ -174,10 +180,11 @@ else
       echo "Saved in: $(realpath ${CFG})"
       echo "Edit this file and set IMG= and/or ISO="
       exit ;;
-    esac
 
-    ## Exit if user chose not to create config file
-    case ${INPUT} in n|N|"") echo; exit ;; esac
+      ## Exit if user chose not to create config file
+      n|N|"") echo; exit ;;
+
+    esac
   done
 fi
 
@@ -188,17 +195,26 @@ echo "Configuration file: $(realpath ${CFG})"
 ## Prompt to continue if both ISO and disk image are not defined in config, and no CLI arguments are provided
 ##
 if [[ ! ${ISO} && ! ${IMG} && ! ${ARG} ]]; then
-
   echo "Neither ISO= nor IMG= disk image set"
   echo -n "Continue? or edit y/n/(e) "
 
   while true; do
     read -sn1 INPUT
-    case ${INPUT} in y|Y) echo; break ;; esac
-    case ${INPUT} in n|N|q|Q) echo; exit ;; esac
-    case ${INPUT} in e|E|"") echo; exec ${EDITOR} ${CFG} 2>/dev/null ;; esac
-  done
 
+    case ${INPUT} in
+
+      y|Y) echo; break ;;
+
+      n|N|q|Q) echo; exit ;;
+
+      e|E|"")
+      echo
+      ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
+      exit ;;
+
+    esac
+
+  done
 fi
 
 ##
@@ -213,19 +229,22 @@ if [[ ${IMG} && ! -e ${IMG} ]]; then
   while true; do
     read -sn1 INPUT
 
-    case ${INPUT} in y|Y|"")
+    case ${INPUT} in
+
+      y|Y|"")
       ## Call function to create disk image until success flag is set
       until [[ ${IMGSTATUS} ]]; do echo; createDiskImage; done
 
       ## Break out of the prompt loop after success
       break ;;
+
+      ## Continue if user chose not to create disk image
+      n|N) IMG=""; echo; break ;;
+
+      ## Exit if user chose to quit
+      q|Q) echo; exit ;;
+
     esac
-
-    ## Continue if user chose not to create disk image
-    case ${INPUT} in n|N) IMG=""; echo; break ;; esac
-
-    ## Exit if user chose to quit
-    case ${INPUT} in q|Q) echo; exit ;; esac
   done
 fi
 
@@ -245,7 +264,6 @@ fi
 ## Check if ISO is defined in config and exists
 ##
 if [[ ${ISO} ]]; then
-
   if [[ ! -e ${ISO} ]]; then
     echo "ISO=${ISO}: Inaccessible or not found"
 
@@ -255,8 +273,12 @@ if [[ ${ISO} ]]; then
 
       while true; do
         read -sn1 INPUT
-        case ${INPUT} in y|Y) echo; break ;; esac
-        case ${INPUT} in n|N|"") echo; exit ;; esac
+
+        case ${INPUT} in
+          y|Y) echo; break ;;
+          n|N|"") echo; exit ;;
+        esac
+
       done
     fi
 
@@ -264,7 +286,6 @@ if [[ ${ISO} ]]; then
   else CDROM="-boot once=d -cdrom ${ISO}"
 
   fi
-
 fi
 
 ##
@@ -275,15 +296,13 @@ case ${NET} in
   0|n|N|[nN][oO]|[oO][fF][fF]|[fF][aA][lL][sS][eE]) NIC="-nic none" ;;
 
   br[0-9]|bridge[0-9]|virbr[0-9])
-    NIC="-nic bridge,br=${NET}"
-    [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}"
-  ;;
+  NIC="-nic bridge,br=${NET}"
+  [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}" ;;
 
   *)
-    ## Generate random MAC address if not defined in config
-    [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
-    NIC="-nic mac=${MAC}"
-  ;;
+  ## Generate random MAC address if not defined in config
+  [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
+  NIC="-nic mac=${MAC}" ;;
 
 esac
 
