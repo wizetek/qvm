@@ -344,7 +344,7 @@ case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine 
 ##
 echo
 echo                   "VM name     [${NAME}]"
-[[ ${CDROM} ]] && echo "boot from   [$(basename ${ISO})]"
+[[ ${CDROM} ]] && echo "boot from   [$(basename "${ISO}")]"
 [[ ${IMG} ]] && echo   "disk image  [$(basename "${IMG}")]"
 [[ ${SOUND} ]] && echo "audio       [enabled]"
 
