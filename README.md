@@ -145,7 +145,7 @@ Boots from the `.iso` file specified on command line using the existing `test` c
 
 #### 5.
 ```
-$ qvm /tmp/test -hda disk.qcow2
+$ qvm /tmp/test disk.qcow2
 Configuration file: /tmp/test
 
 VM name     [test]
