@@ -190,12 +190,13 @@ echo "Configuration file: $(realpath ${CFG})"
 if [[ ! ${ISO} && ! ${IMG} && ! ${ARG} ]]; then
 
   echo "Neither ISO= nor IMG= disk image set"
-  echo -n "Continue? y/(n) "
+  echo -n "Continue? or edit y/n/(e) "
 
   while true; do
     read -sn1 INPUT
     case ${INPUT} in y|Y) echo; break ;; esac
-    case ${INPUT} in n|N|"") echo; exit ;; esac
+    case ${INPUT} in n|N|q|Q) echo; exit ;; esac
+    case ${INPUT} in e|E|"") echo; exec ${EDITOR} ${CFG} 2>/dev/null ;; esac
   done
 
 fi
@@ -207,7 +208,7 @@ if [[ ${IMG} && ! -e ${IMG} ]]; then
 
   ## Prompt to create disk image
   echo "IMG=${IMG}: Inaccessible or not found"
-  echo -n "Prepare disk image? (y)/n/q "
+  echo -n "Prepare disk image? or quit (y)/n/q "
 
   while true; do
     read -sn1 INPUT
