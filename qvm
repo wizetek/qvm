@@ -259,8 +259,8 @@ if [[ ${ISO} ]]; then
       done
     fi
 
-  ## Set to boot from ISO
-  else CDROM="-boot d -cdrom ${ISO}"
+  ## Boot from ISO but only once on startup if bootable disk image is attached
+  else CDROM="-boot once=d -cdrom ${ISO}"
 
   fi
 
