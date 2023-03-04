@@ -105,9 +105,13 @@ shift
 ARG="${@}"
 
 ##
-## If no (valid) arguments are provided, show usage and exit
+## Validate command line arguments
 ##
-case ${CFG} in ""|-*) cat << USAGE
+case ${CFG} in
+
+  ## Show usage and exit if no arguments are provided or if first argument starts with a dash
+  ""|-*)
+  cat << USAGE
 ${CMD} ${VER}
 
 usage:
@@ -115,7 +119,13 @@ usage:
   ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
 
 USAGE
-exit ;;
+  exit ;;
+
+  ## Space is not allowed in config file name
+  *" "*)
+  echo "${CFG}: Invalid file name"
+  exit 1 ;;
+
 esac
 
 ##
@@ -126,8 +136,8 @@ if [[ ${CFG} != *"/"* ]]; then
   CFG="${CFGDIR}/${CFG}" 
 
   ## Create directory structure for config files if needed or exit on failure
-  if [[ ! -d "${CFGDIR}" ]]; then
-    mkdir -p "${CFGDIR}" || exit 1
+  if [[ ! -d ${CFGDIR} ]]; then
+    mkdir -p ${CFGDIR} || exit 1
   fi
 
 fi
