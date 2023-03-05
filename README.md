@@ -1,7 +1,7 @@
 # qvm
-Quick/QEMU VM launcher
+**Quick/QEMU VM launcher**
 
-Bash shell script to quickly create QEMU virtual machines and disk images with separate configuration for each.
+Bash shell script to quickly create QEMU KVM host-CPU virtual machines and disk images with separate configuration for each.
 
 <br>
 
