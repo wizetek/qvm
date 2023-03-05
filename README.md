@@ -2,6 +2,7 @@
 Quick/QEMU VM launcher
 
 Bash shell script to quickly create QEMU virtual machines and disk images with separate configuration for each.
+
 <br>
 
 ## Installation
