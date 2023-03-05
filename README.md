@@ -1,6 +1,7 @@
 # qvm
 Quick/QEMU VM launcher
 
+Bash shell script to quickly create QEMU virtual machines and disk images with separate configuration for each.
 <br>
 
 ## Installation
@@ -77,7 +78,7 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 
 #### 2.
 ```
-$ vim ~/.config/qvm/foo
+/home/you/.config/qvm/foo
 ...
 ...
 ISO="PeppermintOS-amd64.iso"
@@ -100,7 +101,7 @@ Boots from the `.iso` image set in the configuration file. (Good for testing but
 
 #### 3.
 ```
-$ vim foo
+/home/you/.config/qvm/foo
 ...
 ...
 ISO="PeppermintOS-amd64.iso"
@@ -126,7 +127,7 @@ disk image  [peppermint.qcow2]
 MAC address [52:54:c2:a8:66:f8]
 ```
 
-Boots from the `.iso` and provides the `.qcow2` disk image or asks to create it first.
+Boots from the `.iso` and also provides the `.qcow2` disk image or asks to create it first.
 
 <br>
 
@@ -139,7 +140,7 @@ VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
 ```
 
-Boots from the `.iso` file specified on command line using the existing `test` configuration file (with no disk images set).
+Boots from the `.iso` file specified on command line and uses the existing `test` configuration file (no disk images configured inside).
 
 <br>
 
@@ -152,4 +153,4 @@ VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
 ```
 
-Boots up the `.qcow2` disk image and uses configuration in custom path `/tmp/test`.
+Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
