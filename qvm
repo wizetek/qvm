@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/03/04
+## 2022/11/25-2023/03/05
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -187,14 +187,14 @@ if [[ -e ${CFG} ]]; then
 else
   ## Prompt to create config file if not found
   echo "$(realpath ${CFG}): Configuration file not found"
-  echo -n "Create it now from template? y/(n) "
+  echo -n "Create it now from template? (y)/n "
 
   while true; do
     read -sn1 INPUT
 
     case ${INPUT} in
 
-      y|Y)
+      y|Y|"")
       ## Call function to create config file
       createConfigFile
 
@@ -214,7 +214,7 @@ else
       exit ;;
 
       ## Exit if user chose not to create config file
-      n|N|"") echo; exit ;;
+      n|N) echo; exit ;;
 
     esac
   done
