@@ -95,9 +95,31 @@ createDiskImage() {
 }
 
 ##
+## Function to launch QEMU (takes arguments)
+##
+qemuLaunch () {
+
+PS4=""
+set -x
+qemu-system-x86_64 \
+"${@}" \
+-name "${NAME}" \
+-accel kvm -cpu host \
+-smp ${CPU} \
+-m ${MEM} \
+${CHIPSET} \
+${VIDEO} \
+${CONSOLE} \
+${NIC} \
+${SOUND} \
+${OPT} \
+${ARG}
+}
+
+##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.5"
+VER="1.0.6"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -264,8 +286,8 @@ fi
 if [[ ${IMG} ]]; then
 
   case ${RAW} in
-    1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) DISK="-drive format=raw,file=${IMG}" ;;
-    *) DISK="-hda ${IMG}" ;;
+    1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) DISK="-drive format=raw,file=" ;;
+    *) DISK="-hda " ;;
   esac
 
 fi
@@ -293,7 +315,7 @@ if [[ ${ISO} ]]; then
     fi
 
   ## Boot from ISO but only once on startup if bootable disk image is attached
-  else CDROM="-boot once=d -cdrom ${ISO}"
+  else CDROM="-boot once=d -cdrom "
 
   fi
 fi
@@ -361,19 +383,17 @@ fi
 ##
 ## Finally launch QEMU
 ##
-qemu-system-x86_64 \
--name "${NAME}" \
--accel kvm -cpu host \
--smp ${CPU} \
--m ${MEM} \
-${CHIPSET} \
-${VIDEO} \
-${CONSOLE} \
-${NIC} \
-${SOUND} \
-${DISK} \
-${CDROM} \
-${OPT} \
-${ARG}
+echo
+
+## If disk image file names contain spaces, pass them properly to QEMU
+if [[ ${IMG} == *" "* && ${ISO} == *" "* ]]; then
+  qemuLaunch ${DISK}"${IMG}" ${CDROM}"${ISO}"
+elif [[ ${IMG} == *" "* ]]; then
+  qemuLaunch ${DISK}"${IMG}" ${CDROM}${ISO}
+elif [[ ${ISO} == *" "* ]]; then
+  qemuLaunch ${DISK}${IMG} ${CDROM}"${ISO}"
+else
+  qemuLaunch ${DISK}${IMG} ${CDROM}${ISO}
+fi
 
 ##
