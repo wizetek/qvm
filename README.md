@@ -19,7 +19,7 @@ $ chmod +x qvm
 qvm <configfile> [-qemuopt1 -qemuopt2 ...]
 ```
 
-Requires a configuration file as an argument and optionally takes multiple options to pass directly to `qemu`.
+Requires a configuration file as an argument and can take multiple [options](https://man.archlinux.org/man/qemu.1) to pass directly to `qemu`.
 
 <br>
 
