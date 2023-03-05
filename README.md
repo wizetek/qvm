@@ -29,7 +29,7 @@ Requires a configuration file as an argument and optionally takes multiple optio
 ```
 $ qvm foo
 /home/you/.config/qvm/foo: Configuration file not found
-Create it now from template? y/(n)
+Create it now from template? (y)/n 
 ############################################################
 ## qvm configuration
 ##
