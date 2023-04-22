@@ -29,7 +29,7 @@ Requires a configuration file as an argument and can take multiple [options](htt
 ```
 $ qvm foo
 /home/you/.config/qvm/foo: Configuration file not found
-Create it now from template? (y)/n 
+(C)reate config or (q)uit?
 ############################################################
 ## qvm configuration
 ##
@@ -78,8 +78,8 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 <br>
 
 #### 2.
+`/home/you/.config/qvm/foo`
 ```
-/home/you/.config/qvm/foo
 ...
 ...
 ISO="PeppermintOS-amd64.iso"
@@ -90,6 +90,7 @@ ISO="PeppermintOS-amd64.iso"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
+Starting in 5 seconds... (*) skip timeout or (e)dit config?
 
 VM name     [foo]
 boot from   [PeppermintOS-amd64.iso]
@@ -101,8 +102,8 @@ Boots from the `.iso` image set in the configuration file. (Good for testing but
 <br>
 
 #### 3.
+`/home/you/.config/qvm/foo`
 ```
-/home/you/.config/qvm/foo
 ...
 ...
 ISO="PeppermintOS-amd64.iso"
@@ -114,12 +115,13 @@ IMG="peppermint.qcow2"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
+Starting in 5 seconds... (*) skip timeout or (e)dit config?
 IMG=peppermint.qcow2: Inaccessible or not found
-Prepare disk image? or quit (y)/n/q 
-Disk image size (50G) : 
-File format (qcow2)/raw/vdi/vhdx/vmdk : 
-Name (peppermint.qcow2) : 
-Create now? or redo/quit (y)/n/q 
+(P)repare disk image, (c)ontinue, (q)uit?
+Disk image size (50G) = 
+File format (qcow2)/raw/vdi/vhdx/vmdk = 
+Name (peppermint.qcow2) = 
+(C)reate disk image, (r)edo, (q)uit?
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
 VM name     [foo]
@@ -136,6 +138,7 @@ Boots from the `.iso` and also provides the `.qcow2` disk image or asks to creat
 ```
 $ qvm test -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /home/you/.config/qvm/test
+Starting in 5 seconds... (*) skip timeout or (e)dit config?
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
@@ -149,6 +152,7 @@ Boots from the `.iso` file specified on command line and uses the existing `test
 ```
 $ qvm /tmp/test disk.qcow2
 Configuration file: /tmp/test
+Starting in 5 seconds... (*) skip timeout or (e)dit config?
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
