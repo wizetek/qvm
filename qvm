@@ -59,13 +59,13 @@ CFGSTATUS=${?}
 ##
 createDiskImage()
 {
-read -p "Disk image size (50G) = " IMGSIZE
+read -p "Disk image size: (50G) " IMGSIZE
 [[ ! ${IMGSIZE} ]] && IMGSIZE="50G"
 
-read -p "File format (qcow2)/raw/vdi/vhdx/vmdk = " IMGFORMAT
+read -p "File format: (qcow2)/raw/vdi/vhdx/vmdk " IMGFORMAT
 [[ ! ${IMGFORMAT} ]] && IMGFORMAT="qcow2"
 
-read -p "Name (${IMG}) = " IMGNAME
+read -p "Name: (${IMG}) " IMGNAME
 
 ## User chose disk image name different from what is defined in config
 if [[ ${IMGNAME} ]]; then
