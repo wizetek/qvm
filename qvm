@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/03/18
+## 2022/11/25-2023/04/22
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -59,13 +59,13 @@ CFGSTATUS=${?}
 ##
 createDiskImage()
 {
-read -p "Disk image size (50G) : " IMGSIZE
+read -p "Disk image size (50G) = " IMGSIZE
 [[ ! ${IMGSIZE} ]] && IMGSIZE="50G"
 
-read -p "File format (qcow2)/raw/vdi/vhdx/vmdk : " IMGFORMAT
+read -p "File format (qcow2)/raw/vdi/vhdx/vmdk = " IMGFORMAT
 [[ ! ${IMGFORMAT} ]] && IMGFORMAT="qcow2"
 
-read -p "Name (${IMG}) : " IMGNAME
+read -p "Name (${IMG}) = " IMGNAME
 
 ## User chose disk image name different from what is defined in config
 if [[ ${IMGNAME} ]]; then
@@ -74,14 +74,14 @@ if [[ ${IMGNAME} ]]; then
 fi
 
 ## Prompt to confirm or redo creating disk image
-echo -n "Create now? or redo/quit (y)/n/q "
+echo -n "(C)reate disk image, (r)edo, (q)uit?"
 
 while true; do
   read -sn1 INPUT
 
   case ${INPUT} in
-    y|Y|c|C|"") echo; break ;;
-    n|N|r|R) return ;;
+    c|C|"") echo; break ;;
+    r|R) return ;;
     q|Q) echo; exit ;;
   esac
 
@@ -119,7 +119,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.7"
+VER="1.0.8"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -187,14 +187,14 @@ if [[ -e ${CFG} ]]; then
 else
   ## Prompt to create config file if not found
   echo "$(realpath ${CFG}): Configuration file not found"
-  echo -n "Create it now from template? (y)/n "
+  echo -n "(C)reate config or (q)uit?"
 
   while true; do
     read -sn1 INPUT
 
     case ${INPUT} in
 
-      y|Y|"")
+      c|C|"")
       ## Call function to create config file
       createConfigFile
 
@@ -214,7 +214,7 @@ else
       exit ;;
 
       ## Exit if user chose not to create config file
-      n|N) echo; exit ;;
+      q|Q) echo; exit ;;
 
     esac
   done
@@ -223,26 +223,45 @@ fi
 ## Show path to config file on startup
 echo "Configuration file: $(realpath ${CFG})"
 
+## Prompt with timeout to edit config
+echo -n "Starting in 5 seconds... (*) skip timeout or (e)dit config?"
+
+while true; do
+  read -sn1 -t5 INPUT
+
+  case ${INPUT} in
+
+    e|E)
+    echo
+    ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
+    exit ;;
+
+    *) echo; break ;;
+
+  esac
+
+done
+
 ##
 ## Prompt to continue if both ISO and disk image are not defined in config, and no CLI arguments are provided
 ##
 if [[ ! ${ISO} && ! ${IMG} && ! ${ARG} ]]; then
   echo "Neither ISO= nor IMG= disk image set"
-  echo -n "Continue? or edit y/n/(e) "
+  echo -n "(E)dit config, (c)ontinue, (q)uit?"
 
   while true; do
     read -sn1 INPUT
 
     case ${INPUT} in
 
-      y|Y) echo; break ;;
-
-      n|N|q|Q) echo; exit ;;
-
       e|E|"")
       echo
       ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
       exit ;;
+
+      c|C) echo; break ;;
+
+      q|Q) echo; exit ;;
 
     esac
 
@@ -256,14 +275,14 @@ if [[ ${IMG} && ! -e ${IMG} ]]; then
 
   ## Prompt to create disk image
   echo "IMG=${IMG}: Inaccessible or not found"
-  echo -n "Prepare disk image? or quit (y)/n/q "
+  echo -n "(P)repare disk image, (c)ontinue, (q)uit?"
 
   while true; do
     read -sn1 INPUT
 
     case ${INPUT} in
 
-      y|Y|"")
+      p|P|"")
       ## Call function to create disk image until success flag is set
       until [[ ${IMGSTATUS} ]]; do echo; createDiskImage; done
 
@@ -271,7 +290,7 @@ if [[ ${IMG} && ! -e ${IMG} ]]; then
       break ;;
 
       ## Continue if user chose not to create disk image
-      n|N) IMG=""; echo; break ;;
+      c|C) IMG=""; echo; break ;;
 
       ## Exit if user chose to quit
       q|Q) echo; exit ;;
@@ -303,14 +322,14 @@ if [[ ${ISO} ]]; then
 
     ## Prompt to continue if no valid ISO and no disk image are defined in config
     if [[ ! ${IMG} ]]; then
-      echo -n "Continue? y/(n) "
+      echo -n "(Q)uit or (c)ontinue?"
 
       while true; do
         read -sn1 INPUT
 
         case ${INPUT} in
-          y|Y) echo; break ;;
-          n|N|"") echo; exit ;;
+          q|Q|"") echo; exit ;;
+          c|C) echo; break ;;
         esac
 
       done
