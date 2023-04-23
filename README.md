@@ -118,9 +118,9 @@ Configuration file: /home/you/.config/qvm/foo
 Starting in 5 seconds... (*) skip timeout or (e)dit config?
 IMG=peppermint.qcow2: Inaccessible or not found
 (P)repare disk image, (c)ontinue, (q)uit?
-Disk image size: (50G) 
-File format: (qcow2)/raw/vdi/vhdx/vmdk 
-Name: (peppermint.qcow2) 
+Disk image size? (50G) :
+File format? (qcow2) raw vdi vhdx vmdk :
+Name? (peppermint.qcow2) :
 (C)reate disk image, (r)edo, (q)uit?
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
