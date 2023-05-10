@@ -35,26 +35,26 @@ $ qvm foo
 ##
 ## Tips:
 ##
-## NET= <empty> | <boolean> | bridge0 | br0 | virbr0
-##   blank/unset: enable with default MAC address
-##   yes: enable and set custom or random MAC address
+## NET= <boolean> | bridge0 | br0 | virbr0
+##   yes: enable
 ##   no: no networking
-## MAC= <empty> | 52:54:01:23:45:67
-##   blank/unset: random
+## MAC= <empty> | random | 52:54:01:23:45:67
+##   blank/unset: QEMU default
+##   random: generated on startup
 ## ICH9= <boolean>
 ##   yes: Q35/ICH9 host chipset
 ##   no: i440FX/PIIX3
 ## OPT=
-## -hdb /path/to/seconddisk.img
-## -hdd fourthdisk.img
+##   -hdb /path/to/seconddisk.img
+##   -hdd fourthdisk.img
 ##   (-hdc conflicts with -cdrom)
-## -drive format=raw,media=cdrom,readonly,file=cd.iso
-## -nic model=virtio-net-pci
-## -display gtk,gl=on,window-close=off
-## -device VGA,edid=on,xres=1366,yres=768
-## -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-## -daemonize
-## ...and other qemu command options
+##   -drive format=raw,media=cdrom,readonly,file=cd.iso
+##   -nic model=virtio-net-pci
+##   -display gtk,gl=on,window-close=off
+##   -device VGA,edid=on,xres=1366,yres=768
+##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
+##   -daemonize
+##   ...and other qemu command options
 ############################################################
 #
 #NAME="Linux distro"
@@ -66,11 +66,12 @@ MEM="4G"
 #ICH9="yes"
 #AUDIO="yes"
 #NET="no"
-#MAC="52:54:01:23:45:67"
+#MAC="52:54:de:ad:be:ef"
+#MAC="random"
 #VNC=":2"
 #TELNET="2302"
 #SSH="2202"
-#OPT="-usb -device usb-tablet"
+#OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 
 Saved in: /home/you/.config/qvm/foo
