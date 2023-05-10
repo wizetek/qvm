@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/04/23
+## 2022/11/25-2023/05/09
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -15,24 +15,26 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##
 ## Tips:
 ##
-## NET= <boolean> | bridge0 | br0 | virbr0
-##   (empty means enabled)
+## NET= <empty> | <boolean> | bridge0 | br0 | virbr0
+##   blank/unset: enable with default MAC address
+##   yes: enable and set custom or random MAC address
+##   no: no networking
 ## MAC= <empty> | 52:54:01:23:45:67
-##   (empty means random)
+##   blank/unset: random
 ## ICH9= <boolean>
-##   (host chipset Q35/ICH9 or i440FX/PIIX3)
-##
+##   yes: Q35/ICH9 host chipset
+##   no: i440FX/PIIX3
 ## OPT=
 ## -hdb /path/to/seconddisk.img
 ## -hdd fourthdisk.img
 ##   (-hdc conflicts with -cdrom)
 ## -drive format=raw,media=cdrom,readonly,file=cd.iso
 ## -nic model=virtio-net-pci
-## -usb -device usb-tablet
 ## -display gtk,gl=on,window-close=off
 ## -device VGA,edid=on,xres=1366,yres=768
+## -device qxl-vga,ram_size_mb=256,vram_size_mb=256
 ## -daemonize
-## ...and other qemu options
+## ...and other qemu command options
 ############################################################
 #
 #NAME="Linux distro"
@@ -47,7 +49,9 @@ MEM="4G"
 #MAC="52:54:de:ad:be:ef"
 #VNC=":2"
 #TELNET="2302"
+#SSH="2202"
 #OPT="-usb -device usb-tablet"
+#OPT="-vga qxl"
 CONFIG
 
 ## Store exit code
@@ -119,7 +123,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.8"
+VER="1.0.9"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -346,16 +350,24 @@ fi
 ##
 case ${NET} in
 
+  ## NET=<blank> (default MAC)
+  "") [[ ${SSH} ]] && NIC="-nic hostfwd=tcp::${SSH}-:22" ;;
+
+  ## NET=no
   0|n|N|[nN][oO]|[oO][fF][fF]|[fF][aA][lL][sS][eE]) NIC="-nic none" ;;
 
+  ## NET=bridge
   br[0-9]|bridge[0-9]|virbr[0-9])
   NIC="-nic bridge,br=${NET}"
-  [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}" ;;
+  [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}"
+  ;;
 
+  ## NET=true|foo (set MAC)
   *)
-  ## Generate random MAC address if not defined in config
   [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
-  NIC="-nic mac=${MAC}" ;;
+  NIC="-nic mac=${MAC}"
+  [[ ${SSH} ]] && NIC="${NIC},hostfwd=tcp::${SSH}-:22"
+  ;;
 
 esac
 
@@ -372,7 +384,7 @@ case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine 
 ##
 ## Video output and console monitor
 ##
-[[ ${VNC} ]] && VIDEO="-vnc ${VNC},to=99,lossy=on,power-control=on"
+[[ ${VNC} ]] && VIDEO="-vnc ${VNC},lossy=on,power-control=on"
 [[ ${TELNET} ]] && CONSOLE="-monitor telnet:127.0.0.1:${TELNET},server=on,wait=off"
 
 ##
