@@ -35,24 +35,26 @@ $ qvm foo
 ##
 ## Tips:
 ##
-## NET= <boolean> | bridge0 | br0 | virbr0
-##   (empty means enabled)
+## NET= <empty> | <boolean> | bridge0 | br0 | virbr0
+##   blank/unset: enable with default MAC address
+##   yes: enable and set custom or random MAC address
+##   no: no networking
 ## MAC= <empty> | 52:54:01:23:45:67
-##   (empty means random)
+##   blank/unset: random
 ## ICH9= <boolean>
-##   (host chipset Q35/ICH9 or i440FX/PIIX3)
-##
+##   yes: Q35/ICH9 host chipset
+##   no: i440FX/PIIX3
 ## OPT=
 ## -hdb /path/to/seconddisk.img
 ## -hdd fourthdisk.img
 ##   (-hdc conflicts with -cdrom)
 ## -drive format=raw,media=cdrom,readonly,file=cd.iso
 ## -nic model=virtio-net-pci
-## -usb -device usb-tablet
 ## -display gtk,gl=on,window-close=off
 ## -device VGA,edid=on,xres=1366,yres=768
+## -device qxl-vga,ram_size_mb=256,vram_size_mb=256
 ## -daemonize
-## ...and other qemu options.
+## ...and other qemu command options
 ############################################################
 #
 #NAME="Linux distro"
@@ -67,7 +69,9 @@ MEM="4G"
 #MAC="52:54:01:23:45:67"
 #VNC=":2"
 #TELNET="2302"
+#SSH="2202"
 #OPT="-usb -device usb-tablet"
+#OPT="-vga qxl"
 
 Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
