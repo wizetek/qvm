@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/09
+## 2022/11/25-2023/05/10
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -15,26 +15,26 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##
 ## Tips:
 ##
-## NET= <empty> | <boolean> | bridge0 | br0 | virbr0
-##   blank/unset: enable with default MAC address
-##   yes: enable and set custom or random MAC address
+## NET= <boolean> | bridge0 | br0 | virbr0
+##   yes: enable
 ##   no: no networking
-## MAC= <empty> | 52:54:01:23:45:67
-##   blank/unset: random
+## MAC= <empty> | random | 52:54:01:23:45:67
+##   blank/unset: QEMU default
+##   random: generated on startup
 ## ICH9= <boolean>
 ##   yes: Q35/ICH9 host chipset
 ##   no: i440FX/PIIX3
 ## OPT=
-## -hdb /path/to/seconddisk.img
-## -hdd fourthdisk.img
+##   -hdb /path/to/seconddisk.img
+##   -hdd fourthdisk.img
 ##   (-hdc conflicts with -cdrom)
-## -drive format=raw,media=cdrom,readonly,file=cd.iso
-## -nic model=virtio-net-pci
-## -display gtk,gl=on,window-close=off
-## -device VGA,edid=on,xres=1366,yres=768
-## -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-## -daemonize
-## ...and other qemu command options
+##   -drive format=raw,media=cdrom,readonly,file=cd.iso
+##   -nic model=virtio-net-pci
+##   -display gtk,gl=on,window-close=off
+##   -device VGA,edid=on,xres=1366,yres=768
+##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
+##   -daemonize
+##   ...and other qemu command options
 ############################################################
 #
 #NAME="Linux distro"
@@ -47,10 +47,11 @@ MEM="4G"
 #AUDIO="yes"
 #NET="no"
 #MAC="52:54:de:ad:be:ef"
+#MAC="random"
 #VNC=":2"
 #TELNET="2302"
 #SSH="2202"
-#OPT="-usb -device usb-tablet"
+#OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 CONFIG
 
@@ -123,7 +124,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.9"
+VER="1.0.10"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -348,10 +349,11 @@ fi
 ##
 ## Network (default: enabled)
 ##
-case ${NET} in
+case ${MAC} in [rR][aA][nN][dD][oO][mM])
+  MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) ) ;;
+esac
 
-  ## NET=<blank> (default MAC)
-  "") [[ ${SSH} ]] && NIC="-nic hostfwd=tcp::${SSH}-:22" ;;
+case ${NET} in
 
   ## NET=no
   0|n|N|[nN][oO]|[oO][fF][fF]|[fF][aA][lL][sS][eE]) NIC="-nic none" ;;
@@ -362,11 +364,22 @@ case ${NET} in
   [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}"
   ;;
 
-  ## NET=true|foo (set MAC)
+  ## NET=yes|foo
   *)
-  [[ ! ${MAC} ]] && MAC=$( printf 52:54:%02x:%02x:%02x:%02x $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff )) $(( ${RANDOM} & 0xff)) $(( ${RANDOM} & 0xff )) )
-  NIC="-nic mac=${MAC}"
-  [[ ${SSH} ]] && NIC="${NIC},hostfwd=tcp::${SSH}-:22"
+
+  ## Check if MAC is defined in config
+  if [[ ${MAC} ]]; then
+    NIC="-nic mac=${MAC}"
+    ## Append NIC options if SSH is defined in config
+    [[ ${SSH} ]] && NIC="${NIC},"
+
+  ## MAC is not set, use single NIC opton if SSH is defined in config
+  else
+    [[ ${SSH} ]] && NIC="-nic "
+  fi
+
+  ## Set NIC option(s) for SSH forwarding from host to guest
+  [[ ${SSH} ]] && NIC="${NIC}hostfwd=tcp::${SSH}-:22"
   ;;
 
 esac
@@ -374,12 +387,16 @@ esac
 ##
 ## Audio (default: disabled)
 ##
-case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) SOUND="-device intel-hda -device hda-duplex" ;; esac
+case ${AUDIO} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE])
+  SOUND="-device intel-hda -device hda-duplex" ;;
+esac
 
 ##
 ## Chipset: i440FX+PIIX3 PCI/ISA (default) or Q35+ICH9 PCI-E/AHCI
 ##
-case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE]) CHIPSET="-machine q35" ;; esac
+case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE])
+  CHIPSET="-machine q35" ;;
+esac
 
 ##
 ## Video output and console monitor
