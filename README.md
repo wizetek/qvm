@@ -171,3 +171,10 @@ Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
 ## Notes
 * When a (hard) disk image is attached, booting from `.iso` happens only once on initial VM startup so that after the VM is reset it can boot from disk instead of going in a loop.
 * Spaces in file names are supported for `ISO=` and `IMG=` defined in configuration files but not when specified on command line.
+* Only one *unique* config variable can be used (last one wins). To pass a lot of extra options either combine all arguments in one line: `OPT="-foo -bar -baz -opt4 -opt5 -opt6 -opt7 -opt8 -opt9"` or use multiple lines and do something like:
+```
+OPT="-foo"
+OPT="${OPT} -bar"
+OPT="${OPT} -baz"
+```
+* Hint: Use this for Wayland compositors (Hyprland and others) `OPT="-device virtio-vga-gl -display gtk,gl=on"`
