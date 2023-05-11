@@ -73,6 +73,7 @@ MEM="4G"
 #SSH="2202"
 #OPT="-usbdevice tablet"
 #OPT="-vga qxl"
+#OPT="-device virtio-vga-gl -display gtk,gl=on"
 
 Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
