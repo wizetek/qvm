@@ -96,7 +96,7 @@ ISO="PeppermintOS-amd64.iso"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
-Starting in 5 seconds... (*) skip timeout or (e)dit config?
+Launching in 5... or (e)dit config?
 
 VM name     [foo]
 boot from   [PeppermintOS-amd64.iso]
@@ -144,7 +144,7 @@ Boots from the `.iso` and also provides the `.qcow2` disk image or asks to creat
 ```
 $ qvm test -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /home/you/.config/qvm/test
-Starting in 5 seconds... (*) skip timeout or (e)dit config?
+Launching in 5... or (e)dit config?
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
@@ -158,7 +158,7 @@ Boots from the `.iso` file specified on command line and uses the existing `test
 ```
 $ qvm /tmp/test disk.qcow2
 Configuration file: /tmp/test
-Starting in 5 seconds... (*) skip timeout or (e)dit config?
+Launching in 5... or (e)dit config?
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
