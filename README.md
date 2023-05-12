@@ -121,7 +121,7 @@ IMG="peppermint.qcow2"
 ```
 $ qvm foo
 Configuration file: /home/you/.config/qvm/foo
-Starting in 5 seconds... (*) skip timeout or (e)dit config?
+Launching in 5... or (e)dit config?
 IMG=peppermint.qcow2: Inaccessible or not found
 (P)repare disk image, (c)ontinue, (q)uit?
 Disk image size? (50G) :
