@@ -54,6 +54,7 @@ MEM="4G"
 #OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
+#DELAY="3"
 CONFIG
 
 ## Store exit code
@@ -125,7 +126,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.11"
+VER="1.0.12"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -229,12 +230,17 @@ fi
 ## Show path to config file on startup
 echo "Configuration file: $(realpath ${CFG})"
 
-## Prompt with timeout to edit config on startup
-for (( n=5; n>0; n-- )); do
+##
+## Delay startup to allow to edit config
+##
+[[ ! ${DELAY} ]] && DELAY=5
+
+for (( n=${DELAY}; n>0; n-- )); do
   printf '\r%s' "Launching in ${n}... or (e)dit config?"
 
-  ## N = *exactly* nchars vs n = nchars
+  ## read: N = *exactly* nchars vs n = nchars
   read -sN1 -t1 INPUT
+
   case ${INPUT} in
     e|E)
     echo
