@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/12
+## 2022/11/25-2023/05/14
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -250,7 +250,7 @@ for (( n=${DELAY}; n>0; n-- )); do
     "") continue ;;
 
     ## Pressing any key breaks out of both loops (depth 2 nested loop)
-    *) break 2 ;;
+    *) echo; break 2 ;;
   esac
 
 done
