@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/14
+## 2022/11/25-2023/05/17
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -250,10 +250,11 @@ for (( n=${DELAY}; n>0; n-- )); do
     "") continue ;;
 
     ## Pressing any key breaks out of both loops (depth 2 nested loop)
-    *) echo; break 2 ;;
+    *) break 2 ;;
   esac
 
 done
+echo
 
 ##
 ## Prompt to continue if both ISO and disk image are not defined in config, and no CLI arguments are provided
