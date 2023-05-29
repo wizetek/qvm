@@ -16,7 +16,7 @@ $ chmod +x qvm
 ## Usage
 
 ```
-qvm <configfile> [-qemuopt1 -qemuopt2 ...]
+qvm <configfile> [-qemuopt1 -qemuopt2 -qemuopt3 ...]
 ```
 
 Requires a configuration file as an argument and can take multiple [options](https://man.archlinux.org/man/qemu.1) to pass directly to `qemu`.
