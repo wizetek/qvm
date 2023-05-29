@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/17
+## 2022/11/25-2023/05/28
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -126,7 +126,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.12"
+VER="1.0.13"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -143,11 +143,20 @@ case ${CFG} in
   cat << USAGE
 ${CMD} ${VER}
 
-usage:
-
-  ${CMD} <configfile> [-qemuopt1 -qemuopt2 ...]
+Usage:
+${CMD} <configfile> [-qemuopt1 -qemuopt2 -qemuopt3 ...]
 
 USAGE
+
+  # If files exist in config dir, then list them
+  if [[ $(ls -A ${CFGDIR} 2>/dev/null) ]]; then
+    echo "Config dir:"
+    echo "$CFGDIR"
+    echo
+    echo "Config files:"
+    ls -1 $CFGDIR
+    echo
+  fi
   exit ;;
 
   ## Space is not allowed in config file name
