@@ -152,7 +152,6 @@ USAGE
   if [[ $(ls -A ${CFGDIR} 2>/dev/null) ]]; then
     echo "Config files in ${CFGDIR}:"
     ls -1 ${CFGDIR}
-    echo
   fi
   exit ;;
 
