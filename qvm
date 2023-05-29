@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/28
+## 2022/11/25-2023/05/29
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -150,7 +150,7 @@ USAGE
 
   # If files exist in config dir, then list them
   if [[ $(ls -A ${CFGDIR} 2>/dev/null) ]]; then
-    echo "Config files in ${CFGDIR}:"
+    echo "${CFGDIR}:"
     ls -1 ${CFGDIR}
   fi
   exit ;;
