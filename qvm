@@ -150,10 +150,7 @@ USAGE
 
   # If files exist in config dir, then list them
   if [[ $(ls -A ${CFGDIR} 2>/dev/null) ]]; then
-    echo "Config dir:"
-    echo "${CFGDIR}"
-    echo
-    echo "Config files:"
+    echo "Config files in ${CFGDIR}:"
     ls -1 ${CFGDIR}
     echo
   fi
