@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/05/29
+## 2022/11/25-2023/06/01
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -126,7 +126,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.13"
+VER="1.0.14"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -193,8 +193,35 @@ if [[ -e ${CFG} ]]; then
     exit 1
   fi
 
-  ## Checks passed, read config file
-  source ${CFG}
+  ## Read config file and prompt on syntax errors
+  CFGOUT=$(source ${CFG} 2>&1)
+
+  if [[ ${?} != 0 ]]; then
+    echo "$(realpath ${CFG}): Invalid configuration file"
+    CFGASK="(E)dit config, (v)iew errors, (q)uit?"
+    echo -n "${CFGASK}"
+
+    while true; do
+      read -sn1 INPUT
+
+      case ${INPUT} in
+
+        e|E|"")
+        echo
+        ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
+        exit ;;
+
+        v|V)
+        echo
+        echo "${CFGOUT}"
+        echo -n "${CFGASK}" ;;
+
+        q|Q) echo; exit ;;
+
+      esac
+    done
+
+  fi
 
 else
   ## Prompt to create config file if not found
