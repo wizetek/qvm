@@ -194,12 +194,10 @@ if [[ -e ${CFG} ]]; then
   fi
 
   ## Read config file and prompt on syntax errors
-  CFGOUT=$(source ${CFG} 2>&1)
+  source ${CFG}
 
   if [[ ${?} != 0 ]]; then
-    echo "$(realpath ${CFG}): Invalid configuration file"
-    CFGASK="(E)dit config, (v)iew errors, (q)uit?"
-    echo -n "${CFGASK}"
+    echo -n "(E)dit config or (q)uit?"
 
     while true; do
       read -sn1 INPUT
@@ -210,11 +208,6 @@ if [[ -e ${CFG} ]]; then
         echo
         ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
         exit ;;
-
-        v|V)
-        echo
-        echo "${CFGOUT}"
-        echo -n "${CFGASK}" ;;
 
         q|Q) echo; exit ;;
 
