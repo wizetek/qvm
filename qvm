@@ -65,6 +65,7 @@ CFGSTATUS=${?}
 ##
 setVarsFromConfig() {
 ## Eval to strip away quotes
+DELAY=$(eval echo $(awk -F= '/^DELAY=/ {print $2}' ${CFG}))
 NAME=$(eval echo $(awk -F= '/^NAME=/ {print $2}' ${CFG}))
 ISO=$(eval echo $(awk -F= '/^ISO=/ {print $2}' ${CFG}))
 IMG=$(eval echo $(awk -F= '/^IMG=/ {print $2}' ${CFG}))
@@ -79,7 +80,6 @@ VNC=$(eval echo $(awk -F= '/^VNC=/ {print $2}' ${CFG}))
 TELNET=$(eval echo $(awk -F= '/^TELNET=/ {print $2}' ${CFG}))
 SSH=$(eval echo $(awk -F= '/^SSH=/ {print $2}' ${CFG}))
 OPT=$(eval echo $(awk -F= '/^OPT=/ {print $2}' ${CFG}))
-DELAY=$(eval echo $(awk -F= '/^DELAY=/ {print $2}' ${CFG}))
 }
 
 ##
