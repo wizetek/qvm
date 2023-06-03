@@ -64,21 +64,22 @@ CFGSTATUS=${?}
 ## Function to only read the expected variables from config file
 ##
 setVarsFromConfig() {
-NAME=$(awk -F= '/^NAME=/ {print $2}' ${CFG})
-ISO=$(awk -F= '/^ISO=/ {print $2}' ${CFG})
-IMG=$(awk -F= '/^IMG=/ {print $2}' ${CFG})
-RAW=$(awk -F= '/^RAW=/ {print $2}' ${CFG})
-CPU=$(awk -F= '/^CPU=/ {print $2}' ${CFG})
-MEM=$(awk -F= '/^MEM=/ {print $2}' ${CFG})
-ICH9=$(awk -F= '/^ICH9=/ {print $2}' ${CFG})
-AUDIO=$(awk -F= '/^AUDIO=/ {print $2}' ${CFG})
-NET=$(awk -F= '/^NET=/ {print $2}' ${CFG})
-MAC=$(awk -F= '/^MAC=/ {print $2}' ${CFG})
-VNC=$(awk -F= '/^VNC=/ {print $2}' ${CFG})
-TELNET=$(awk -F= '/^TELNET=/ {print $2}' ${CFG})
-SSH=$(awk -F= '/^SSH=/ {print $2}' ${CFG})
-OPT=$(awk -F= '/^OPT=/ {print $2}' ${CFG})
-DELAY=$(awk -F= '/^DELAY=/ {print $2}' ${CFG})
+## Pipe through xargs to strip away quotes
+NAME=$(awk -F= '/^NAME=/ {print $2}' ${CFG} | xargs)
+ISO=$(awk -F= '/^ISO=/ {print $2}' ${CFG} | xargs)
+IMG=$(awk -F= '/^IMG=/ {print $2}' ${CFG} | xargs)
+RAW=$(awk -F= '/^RAW=/ {print $2}' ${CFG} | xargs)
+CPU=$(awk -F= '/^CPU=/ {print $2}' ${CFG} | xargs)
+MEM=$(awk -F= '/^MEM=/ {print $2}' ${CFG} | xargs)
+ICH9=$(awk -F= '/^ICH9=/ {print $2}' ${CFG} | xargs)
+AUDIO=$(awk -F= '/^AUDIO=/ {print $2}' ${CFG} | xargs)
+NET=$(awk -F= '/^NET=/ {print $2}' ${CFG} | xargs)
+MAC=$(awk -F= '/^MAC=/ {print $2}' ${CFG} | xargs)
+VNC=$(awk -F= '/^VNC=/ {print $2}' ${CFG} | xargs)
+TELNET=$(awk -F= '/^TELNET=/ {print $2}' ${CFG} | xargs)
+SSH=$(awk -F= '/^SSH=/ {print $2}' ${CFG} | xargs)
+OPT=$(awk -F= '/^OPT=/ {print $2}' ${CFG} | xargs)
+DELAY=$(awk -F= '/^DELAY=/ {print $2}' ${CFG} | xargs)
 }
 
 ##
@@ -258,8 +259,7 @@ echo "Configuration file: $(realpath ${CFG})"
 ##
 [[ ! ${DELAY} ]] && DELAY=5
 
-## Pipe through xargs to strip away quotes
-for (( n=$(echo ${DELAY} | xargs); n>0; n-- )); do
+for (( n=${DELAY}; n>0; n-- )); do
   printf '\r%s' "Launching in ${n}... or (e)dit config?"
 
   ## read: N = *exactly* nchars vs n = nchars
