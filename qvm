@@ -53,7 +53,7 @@ MEM="4G"
 #OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-#DELAY="3"
+#DELAY="0"
 CONFIG
 
 ## Store exit code
@@ -271,14 +271,13 @@ for (( n=${DELAY}; n>0; n-- )); do
     ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
     exit ;;
 
-    "") continue ;;
+    "") echo; continue ;;
 
     ## Pressing any key breaks out of both loops (depth 2 nested loop)
-    *) break 2 ;;
+    *) echo; break 2 ;;
   esac
 
 done
-echo
 
 ##
 ## Prompt to continue if both ISO and disk image are not defined in config, and no CLI arguments are provided
