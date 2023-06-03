@@ -64,22 +64,22 @@ CFGSTATUS=${?}
 ## Function to only read the expected variables from config file
 ##
 setVarsFromConfig() {
-## Pipe through xargs to strip away quotes
-NAME=$(awk -F= '/^NAME=/ {print $2}' ${CFG} | xargs)
-ISO=$(awk -F= '/^ISO=/ {print $2}' ${CFG} | xargs)
-IMG=$(awk -F= '/^IMG=/ {print $2}' ${CFG} | xargs)
-RAW=$(awk -F= '/^RAW=/ {print $2}' ${CFG} | xargs)
-CPU=$(awk -F= '/^CPU=/ {print $2}' ${CFG} | xargs)
-MEM=$(awk -F= '/^MEM=/ {print $2}' ${CFG} | xargs)
-ICH9=$(awk -F= '/^ICH9=/ {print $2}' ${CFG} | xargs)
-AUDIO=$(awk -F= '/^AUDIO=/ {print $2}' ${CFG} | xargs)
-NET=$(awk -F= '/^NET=/ {print $2}' ${CFG} | xargs)
-MAC=$(awk -F= '/^MAC=/ {print $2}' ${CFG} | xargs)
-VNC=$(awk -F= '/^VNC=/ {print $2}' ${CFG} | xargs)
-TELNET=$(awk -F= '/^TELNET=/ {print $2}' ${CFG} | xargs)
-SSH=$(awk -F= '/^SSH=/ {print $2}' ${CFG} | xargs)
-OPT=$(awk -F= '/^OPT=/ {print $2}' ${CFG} | xargs)
-DELAY=$(awk -F= '/^DELAY=/ {print $2}' ${CFG} | xargs)
+## Eval to strip away quotes
+NAME=$(eval echo $(awk -F= '/^NAME=/ {print $2}' ${CFG}))
+ISO=$(eval echo $(awk -F= '/^ISO=/ {print $2}' ${CFG}))
+IMG=$(eval echo $(awk -F= '/^IMG=/ {print $2}' ${CFG}))
+RAW=$(eval echo $(awk -F= '/^RAW=/ {print $2}' ${CFG}))
+CPU=$(eval echo $(awk -F= '/^CPU=/ {print $2}' ${CFG}))
+MEM=$(eval echo $(awk -F= '/^MEM=/ {print $2}' ${CFG}))
+ICH9=$(eval echo $(awk -F= '/^ICH9=/ {print $2}' ${CFG}))
+AUDIO=$(eval echo $(awk -F= '/^AUDIO=/ {print $2}' ${CFG}))
+NET=$(eval echo $(awk -F= '/^NET=/ {print $2}' ${CFG}))
+MAC=$(eval echo $(awk -F= '/^MAC=/ {print $2}' ${CFG}))
+VNC=$(eval echo $(awk -F= '/^VNC=/ {print $2}' ${CFG}))
+TELNET=$(eval echo $(awk -F= '/^TELNET=/ {print $2}' ${CFG}))
+SSH=$(eval echo $(awk -F= '/^SSH=/ {print $2}' ${CFG}))
+OPT=$(eval echo $(awk -F= '/^OPT=/ {print $2}' ${CFG}))
+DELAY=$(eval echo $(awk -F= '/^DELAY=/ {print $2}' ${CFG}))
 }
 
 ##
