@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/06/01
+## 2022/11/25-2023/06/03
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
 ## Function to create config file
 ##
-createConfigFile()
-{
+createConfigFile() {
 cat 2>/dev/null 1>${CFG} << CONFIG
 ############################################################
 ## ${CMD} configuration
@@ -62,10 +61,30 @@ CFGSTATUS=${?}
 }
 
 ##
+## Function to only read the expected variables from config file
+##
+setVarsFromConfig() {
+NAME=$(awk -F= '/^NAME=/ {print $2}' ${CFG})
+ISO=$(awk -F= '/^ISO=/ {print $2}' ${CFG})
+IMG=$(awk -F= '/^IMG=/ {print $2}' ${CFG})
+RAW=$(awk -F= '/^RAW=/ {print $2}' ${CFG})
+CPU=$(awk -F= '/^CPU=/ {print $2}' ${CFG})
+MEM=$(awk -F= '/^MEM=/ {print $2}' ${CFG})
+ICH9=$(awk -F= '/^ICH9=/ {print $2}' ${CFG})
+AUDIO=$(awk -F= '/^AUDIO=/ {print $2}' ${CFG})
+NET=$(awk -F= '/^NET=/ {print $2}' ${CFG})
+MAC=$(awk -F= '/^MAC=/ {print $2}' ${CFG})
+VNC=$(awk -F= '/^VNC=/ {print $2}' ${CFG})
+TELNET=$(awk -F= '/^TELNET=/ {print $2}' ${CFG})
+SSH=$(awk -F= '/^SSH=/ {print $2}' ${CFG})
+OPT=$(awk -F= '/^OPT=/ {print $2}' ${CFG})
+DELAY=$(awk -F= '/^DELAY=/ {print $2}' ${CFG})
+}
+
+##
 ## Function to create disk image interactively
 ##
-createDiskImage()
-{
+createDiskImage() {
 read -p "Disk image size? (50G) :" IMGSIZE
 [[ ! ${IMGSIZE} ]] && IMGSIZE="50G"
 
@@ -104,8 +123,7 @@ IMGSTATUS=1
 ##
 ## Function to launch QEMU (takes arguments)
 ##
-qemuLaunch ()
-{
+qemuLaunch () {
 PS4=""
 set -x
 qemu-system-x86_64 \
@@ -126,7 +144,7 @@ ${ARG}
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.14"
+VER="1.0.15"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -193,28 +211,8 @@ if [[ -e ${CFG} ]]; then
     exit 1
   fi
 
-  ## Read config file and prompt on syntax errors
-  source ${CFG}
-
-  if [[ ${?} != 0 ]]; then
-    echo -n "(E)dit config or (q)uit?"
-
-    while true; do
-      read -sn1 INPUT
-
-      case ${INPUT} in
-
-        e|E|"")
-        echo
-        ${EDITOR} ${CFG} 2>/dev/null || echo "EDITOR= must be set properly"
-        exit ;;
-
-        q|Q) echo; exit ;;
-
-      esac
-    done
-
-  fi
+  ## Call function to read variables from config file instead of sourcing it
+  setVarsFromConfig
 
 else
   ## Prompt to create config file if not found
@@ -260,7 +258,8 @@ echo "Configuration file: $(realpath ${CFG})"
 ##
 [[ ! ${DELAY} ]] && DELAY=5
 
-for (( n=${DELAY}; n>0; n-- )); do
+## Pipe through xargs to strip away quotes
+for (( n=$(echo ${DELAY} | xargs); n>0; n-- )); do
   printf '\r%s' "Launching in ${n}... or (e)dit config?"
 
   ## read: N = *exactly* nchars vs n = nchars
