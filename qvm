@@ -36,6 +36,7 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##   ...and other qemu command options
 ############################################################
 #
+#DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
 #IMG="disk.qcow2"
@@ -53,7 +54,6 @@ MEM="4G"
 #OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-#DELAY="0"
 CONFIG
 
 ## Store exit code
