@@ -57,6 +57,7 @@ $ qvm foo
 ##   ...and other qemu command options
 ############################################################
 #
+#DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
 #IMG="disk.qcow2"
@@ -74,7 +75,6 @@ MEM="4G"
 #OPT="-usbdevice tablet"
 #OPT="-vga qxl"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-#DELAY="3"
 
 Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
@@ -125,9 +125,9 @@ Configuration file: /home/you/.config/qvm/foo
 Launching in 5... or (e)dit config?
 IMG=peppermint.qcow2: Inaccessible or not found
 (P)repare disk image, (c)ontinue, (q)uit?
-Disk image size? (50G) :
-File format? (qcow2) raw vdi vhdx vmdk :
-Name? (peppermint.qcow2) :
+Disk image size? (50G) => 
+File format? (qcow2) raw vdi vhdx vmdk => 
+Name? (peppermint.qcow2) => 
 (C)reate disk image, (r)edo, (q)uit?
 Formatting 'peppermint.qcow2', fmt=qcow2 cluster_size=65536 extended_l2=off compression_type=zlib size=53687091200 lazy_refcounts=off refcount_bits=16
 
@@ -145,7 +145,7 @@ Boots from the `.iso` and also provides the `.qcow2` disk image or asks to creat
 ```
 $ qvm test -cdrom siduction-22.1-Masters_of_War-xfce-amd64-202212291715.iso
 Configuration file: /home/you/.config/qvm/test
-Launching in 5... or (e)dit config?
+Launching...
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
@@ -159,7 +159,7 @@ Boots from the `.iso` file specified on command line and uses the existing `test
 ```
 $ qvm /tmp/test disk.qcow2
 Configuration file: /tmp/test
-Launching in 5... or (e)dit config?
+Launching...
 
 VM name     [test]
 MAC address [52:54:b8:d7:d7:ab]
@@ -170,6 +170,7 @@ Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
 <br>
 
 ## Notes
+* `DELAY=0` will boot imediately but won't prompt to edit config for convenience.
 * When a (hard) disk image is attached, booting from `.iso` happens only once on initial VM startup so that after the VM is reset it can boot from disk instead of going in a loop.
 * Spaces in file names are supported for `ISO=` and `IMG=` defined in configuration files but not when specified on command line.
 * Only one *unique* config variable can be used (last one wins). To pass a lot of extra options either combine all arguments in one line: `OPT="-foo -bar -baz -opt4 -opt5 -opt6 -opt7 -opt8 -opt9"` or use multiple lines and do something like:
@@ -178,4 +179,4 @@ OPT="-foo"
 OPT="${OPT} -bar"
 OPT="${OPT} -baz"
 ```
-* Hint: Use this for Wayland compositors (Hyprland and others) `OPT="-device virtio-vga-gl -display gtk,gl=on"`
+* Hint: Use `OPT="-device virtio-vga-gl -display gtk,gl=on"` for Hyprland and other Wayland compositors.
