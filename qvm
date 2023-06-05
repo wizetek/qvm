@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/06/03
+## 2022/11/25-2023/06/05
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -64,22 +64,21 @@ CFGSTATUS=${?}
 ## Function to only read the expected variables from config file
 ##
 setVarsFromConfig() {
-## Eval to strip away quotes
-DELAY=$(eval echo $(awk -F= '/^DELAY=/ {print $2}' ${CFG}))
-NAME=$(eval echo $(awk -F= '/^NAME=/ {print $2}' ${CFG}))
-ISO=$(eval echo $(awk -F= '/^ISO=/ {print $2}' ${CFG}))
-IMG=$(eval echo $(awk -F= '/^IMG=/ {print $2}' ${CFG}))
-RAW=$(eval echo $(awk -F= '/^RAW=/ {print $2}' ${CFG}))
-CPU=$(eval echo $(awk -F= '/^CPU=/ {print $2}' ${CFG}))
-MEM=$(eval echo $(awk -F= '/^MEM=/ {print $2}' ${CFG}))
-ICH9=$(eval echo $(awk -F= '/^ICH9=/ {print $2}' ${CFG}))
-AUDIO=$(eval echo $(awk -F= '/^AUDIO=/ {print $2}' ${CFG}))
-NET=$(eval echo $(awk -F= '/^NET=/ {print $2}' ${CFG}))
-MAC=$(eval echo $(awk -F= '/^MAC=/ {print $2}' ${CFG}))
-VNC=$(eval echo $(awk -F= '/^VNC=/ {print $2}' ${CFG}))
-TELNET=$(eval echo $(awk -F= '/^TELNET=/ {print $2}' ${CFG}))
-SSH=$(eval echo $(awk -F= '/^SSH=/ {print $2}' ${CFG}))
-OPT=$(eval echo $(awk -F= '/^OPT=/ {print $2}' ${CFG}))
+DELAY=$(echo $(awk -F\" '/^DELAY=/ {print $2}' ${CFG}))
+NAME=$(echo $(awk -F\" '/^NAME=/ {print $2}' ${CFG}))
+ISO=$(echo $(awk -F\" '/^ISO=/ {print $2}' ${CFG}))
+IMG=$(echo $(awk -F\" '/^IMG=/ {print $2}' ${CFG}))
+RAW=$(echo $(awk -F\" '/^RAW=/ {print $2}' ${CFG}))
+CPU=$(echo $(awk -F\" '/^CPU=/ {print $2}' ${CFG}))
+MEM=$(echo $(awk -F\" '/^MEM=/ {print $2}' ${CFG}))
+ICH9=$(echo $(awk -F\" '/^ICH9=/ {print $2}' ${CFG}))
+AUDIO=$(echo $(awk -F\" '/^AUDIO=/ {print $2}' ${CFG}))
+NET=$(echo $(awk -F\" '/^NET=/ {print $2}' ${CFG}))
+MAC=$(echo $(awk -F\" '/^MAC=/ {print $2}' ${CFG}))
+VNC=$(echo $(awk -F\" '/^VNC=/ {print $2}' ${CFG}))
+TELNET=$(echo $(awk -F\" '/^TELNET=/ {print $2}' ${CFG}))
+SSH=$(echo $(awk -F\" '/^SSH=/ {print $2}' ${CFG}))
+OPT=$(echo $(awk -F\" '/^OPT=/ {print $2}' ${CFG}))
 }
 
 ##
