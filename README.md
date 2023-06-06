@@ -30,10 +30,8 @@ Requires a configuration file as an argument and can take multiple [options](htt
 $ qvm foo
 /home/you/.config/qvm/foo: Configuration file not found
 (C)reate config or (q)uit?
-############################################################
+#######################################################
 ## qvm configuration
-##
-## Tips:
 ##
 ## NET= <boolean> | bridge0 | br0 | virbr0
 ##   yes: enable
@@ -50,13 +48,20 @@ $ qvm foo
 ##   (-hdc conflicts with -cdrom)
 ##   -drive format=raw,media=cdrom,readonly,file=cd.iso
 ##   -nic model=virtio-net-pci
-##   -display gtk,gl=on,window-close=off
 ##   -device VGA,edid=on,xres=1366,yres=768
 ##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-##   -daemonize
 ##   ...and other qemu command options
-############################################################
+##
+#######################################################
+## One variable per line and no spaces in front
+## Values must be in (begin with) double quotes
+## First conflicting instance wins, except
+## OPT can be set multiple times
+#######################################################
 #
+# Internal:
+#
+# Zero delay also disables startup prompt to edit config
 #DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
@@ -66,15 +71,29 @@ CPU="2"
 MEM="4G"
 #ICH9="yes"
 #AUDIO="yes"
+# No network disables setting MAC
 #NET="no"
 #MAC="52:54:de:ad:be:ef"
 #MAC="random"
 #VNC=":2"
 #TELNET="2302"
 #SSH="2202"
+#
+# Passed to qemu:
+#
+# Fixes Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
+#
+# Recommended for Linux guests instead of std VGA
 #OPT="-vga qxl"
+#
+# For OpenGL, Wayland, etc.
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
+#
+# Misc (last one wins conflict)
+#OPT="-display gtk,zoom-to-fit=on,window-close=off"
+#OPT="-display sdl"
+#OPT="-daemonize"
 
 Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
@@ -170,7 +189,5 @@ Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
 <br>
 
 ## Notes
-* `DELAY=0` will boot imediately but won't prompt on startup to edit the config file.
 * When a (hard) disk image is attached, booting from `.iso` happens only once on initial VM startup so that after the VM is reset it can boot from disk instead of going in a loop.
 * Spaces in file names are supported for `ISO=` and `IMG=` defined in configuration files but not when specified on command line.
-* Hint: Use `OPT="-device virtio-vga-gl -display gtk,gl=on"` for Hyprland and other Wayland compositors.
