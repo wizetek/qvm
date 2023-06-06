@@ -32,10 +32,9 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##   ...and other qemu command options
 ##
 #######################################################
-## One variable per line and no spaces in front
-## Values must be in (begin with) double quotes
-## First conflicting instance wins, except
-## OPT can be set multiple times
+## One variable per line and no spaces in front.
+## Values must be in (begin with) double quotes.
+## First conflicting instance wins except multiple OPT.
 #######################################################
 #
 # Internal:
