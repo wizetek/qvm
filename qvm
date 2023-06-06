@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/06/05
+## 2022/11/25-2023/06/06
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -9,10 +9,8 @@
 ##
 createConfigFile() {
 cat 2>/dev/null 1>${CFG} << CONFIG
-############################################################
+#######################################################
 ## ${CMD} configuration
-##
-## Tips:
 ##
 ## NET= <boolean> | bridge0 | br0 | virbr0
 ##   yes: enable
@@ -29,13 +27,20 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##   (-hdc conflicts with -cdrom)
 ##   -drive format=raw,media=cdrom,readonly,file=cd.iso
 ##   -nic model=virtio-net-pci
-##   -display gtk,gl=on,window-close=off
 ##   -device VGA,edid=on,xres=1366,yres=768
 ##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-##   -daemonize
 ##   ...and other qemu command options
-############################################################
+##
+#######################################################
+## One variable per line and no spaces in front
+## Values must be in (begin with) double quotes
+## First conflicting instance wins, except
+## OPT can be set multiple times
+#######################################################
 #
+# Internal:
+#
+# Zero delay also disables startup prompt to edit config
 #DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
@@ -45,15 +50,29 @@ CPU="2"
 MEM="4G"
 #ICH9="yes"
 #AUDIO="yes"
+# No network disables setting MAC
 #NET="no"
 #MAC="52:54:de:ad:be:ef"
 #MAC="random"
 #VNC=":2"
 #TELNET="2302"
 #SSH="2202"
+#
+# Passed to qemu:
+#
+# Fixes Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
+#
+# Recommended for Linux guests instead of std VGA
 #OPT="-vga qxl"
+#
+# For OpenGL, Wayland, etc.
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
+#
+# Misc (last one wins conflict)
+#OPT="-display gtk,zoom-to-fit=on,window-close=off"
+#OPT="-display sdl"
+#OPT="-daemonize"
 CONFIG
 
 ## Store exit code
@@ -64,20 +83,22 @@ CFGSTATUS=${?}
 ## Function to only read the expected variables from config file
 ##
 setVarsFromConfig() {
-DELAY=$(echo $(awk -F\" '/^DELAY=/ {print $2}' ${CFG}))
-NAME=$(echo $(awk -F\" '/^NAME=/ {print $2}' ${CFG}))
-ISO=$(echo $(awk -F\" '/^ISO=/ {print $2}' ${CFG}))
-IMG=$(echo $(awk -F\" '/^IMG=/ {print $2}' ${CFG}))
-RAW=$(echo $(awk -F\" '/^RAW=/ {print $2}' ${CFG}))
-CPU=$(echo $(awk -F\" '/^CPU=/ {print $2}' ${CFG}))
-MEM=$(echo $(awk -F\" '/^MEM=/ {print $2}' ${CFG}))
-ICH9=$(echo $(awk -F\" '/^ICH9=/ {print $2}' ${CFG}))
-AUDIO=$(echo $(awk -F\" '/^AUDIO=/ {print $2}' ${CFG}))
-NET=$(echo $(awk -F\" '/^NET=/ {print $2}' ${CFG}))
-MAC=$(echo $(awk -F\" '/^MAC=/ {print $2}' ${CFG}))
-VNC=$(echo $(awk -F\" '/^VNC=/ {print $2}' ${CFG}))
-TELNET=$(echo $(awk -F\" '/^TELNET=/ {print $2}' ${CFG}))
-SSH=$(echo $(awk -F\" '/^SSH=/ {print $2}' ${CFG}))
+## print;exit to only get the first occurrence
+DELAY=$(echo $(awk -F\" '/^DELAY=/ {print $2; exit}' ${CFG}))
+NAME=$(echo $(awk -F\" '/^NAME=/ {print $2; exit}' ${CFG}))
+ISO=$(echo $(awk -F\" '/^ISO=/ {print $2; exit}' ${CFG}))
+IMG=$(echo $(awk -F\" '/^IMG=/ {print $2; exit}' ${CFG}))
+RAW=$(echo $(awk -F\" '/^RAW=/ {print $2; exit}' ${CFG}))
+CPU=$(echo $(awk -F\" '/^CPU=/ {print $2; exit}' ${CFG}))
+MEM=$(echo $(awk -F\" '/^MEM=/ {print $2; exit}' ${CFG}))
+ICH9=$(echo $(awk -F\" '/^ICH9=/ {print $2; exit}' ${CFG}))
+AUDIO=$(echo $(awk -F\" '/^AUDIO=/ {print $2; exit}' ${CFG}))
+NET=$(echo $(awk -F\" '/^NET=/ {print $2; exit}' ${CFG}))
+MAC=$(echo $(awk -F\" '/^MAC=/ {print $2; exit}' ${CFG}))
+VNC=$(echo $(awk -F\" '/^VNC=/ {print $2; exit}' ${CFG}))
+TELNET=$(echo $(awk -F\" '/^TELNET=/ {print $2; exit}' ${CFG}))
+SSH=$(echo $(awk -F\" '/^SSH=/ {print $2; exit}' ${CFG}))
+## Get all matches
 OPT=$(echo $(awk -F\" '/^OPT=/ {print $2}' ${CFG}))
 }
 
@@ -141,10 +162,27 @@ ${OPT} \
 ${ARG}
 }
 
+#### BEGIN ####
+
+##
+## Check binary dependencies
+##
+for i in awk qemu-system-x86_64 qemu-img; do
+  if [[ ! $(type -p ${i}) ]]; then
+    DEPLIST="${i} ${DEPLIST}"
+  fi
+done
+
+## Exit if any dependency is missing
+if [[ ${DEPLIST} ]]; then
+  echo "Unmet dependencies: ${DEPLIST}"
+  exit 1
+fi
+
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.15"
+VER="1.0.16"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -162,7 +200,10 @@ case ${CFG} in
 ${CMD} ${VER}
 
 Usage:
-${CMD} <configfile> [-qemuopt1 -qemuopt2 -qemuopt3 ...]
+
+  ${CMD} <configfile> [-qemuopt1 -qemuopt2 -qemuopt3 ...]
+
+Configuration file will be created automatically.
 
 USAGE
 
