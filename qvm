@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/06/06
+## 2022/11/25-2023/11/01
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -58,6 +58,7 @@ MEM="4G"
 #SSH="2202"
 #
 # Passed to qemu:
+# (last one wins conflict)
 #
 # Fixes Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
@@ -66,9 +67,11 @@ MEM="4G"
 #OPT="-vga qxl"
 #
 # For OpenGL, Wayland, etc.
+#OPT="-vga virtio"
+#OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
 #
-# Misc (last one wins conflict)
+# Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
 #OPT="-daemonize"
@@ -79,7 +82,7 @@ CFGSTATUS=${?}
 }
 
 ##
-## Function to only read the expected variables from config file
+## Function to read variables from config file
 ##
 setVarsFromConfig() {
 ## print;exit to only get the first occurrence
@@ -97,7 +100,7 @@ MAC=$(echo $(awk -F\" '/^MAC=/ {print $2; exit}' ${CFG}))
 VNC=$(echo $(awk -F\" '/^VNC=/ {print $2; exit}' ${CFG}))
 TELNET=$(echo $(awk -F\" '/^TELNET=/ {print $2; exit}' ${CFG}))
 SSH=$(echo $(awk -F\" '/^SSH=/ {print $2; exit}' ${CFG}))
-## Get all matches
+## Get all matches for OPT
 OPT=$(echo $(awk -F\" '/^OPT=/ {print $2}' ${CFG}))
 }
 
@@ -181,7 +184,7 @@ fi
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.16"
+VER="1.0.17"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
