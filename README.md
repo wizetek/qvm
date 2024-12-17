@@ -191,3 +191,4 @@ Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
 ## Notes
 * When a (hard) disk image is attached, booting from `.iso` happens only once on initial VM startup so that after the VM is reset it can boot from disk instead of going in a loop.
 * Spaces in file names are supported for `ISO=` and `IMG=` defined in configuration files but not when specified on command line.
+* UEFI boot `OPT="-bios /usr/share/ovmf/x64/OVMF.fd"`
