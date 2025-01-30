@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2023/11/01
+## 2022/11/25-2025/01/29
 ## Tom Wizetek <tom@wizetek.com>
 
 ##
@@ -9,35 +9,12 @@
 ##
 createConfigFile() {
 cat 2>/dev/null 1>${CFG} << CONFIG
-#######################################################
-## ${CMD} configuration
-##
-## NET= <boolean> | bridge0 | br0 | virbr0
-##   yes: enable
-##   no: no networking
-## MAC= <empty> | random | 52:54:01:23:45:67
-##   blank/unset: QEMU default
-##   random: generated on startup
-## ICH9= <boolean>
-##   yes: Q35/ICH9 host chipset
-##   no: i440FX/PIIX3
-## OPT=
-##   -hdb /path/to/seconddisk.img
-##   -hdd fourthdisk.img
-##   (-hdc conflicts with -cdrom)
-##   -drive format=raw,media=cdrom,readonly,file=cd.iso
-##   -nic model=virtio-net-pci
-##   -device VGA,edid=on,xres=1366,yres=768
-##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-##   ...and other qemu command options
-##
-#######################################################
-## One variable per line and no spaces in front.
-## Values must be in (begin with) double quotes.
-## First conflicting instance wins except multiple OPT.
-#######################################################
+# ${CMD} configuration
 #
-# Internal:
+# One variable per line
+# No spaces in front
+# Values must be enclosed in (begin with) double quotes
+# First conflicting instance wins except multiple OPT
 #
 # Zero delay also disables startup prompt to edit config
 #DELAY="1"
@@ -47,20 +24,36 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 #RAW="yes"
 CPU="2"
 MEM="4G"
+# ICH9= <boolean>
+#   yes: Q35/ICH9 host chipset
+#   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-# No network disables setting MAC
+# NET= <boolean> | bridge0 | br0 | virbr0
+#   yes: enable
+#   no: no networking (disables setting MAC)
 #NET="no"
-#MAC="52:54:de:ad:be:ef"
+# MAC= <empty> | random | 52:54:de:ad:be:ef
+#   <empty>: QEMU default
+#   random: generated on startup
 #MAC="random"
 #VNC=":2"
+#LOSSY="yes"
 #TELNET="2302"
 #SSH="2202"
 #
-# Passed to qemu:
-# (last one wins conflict)
+# Options passed to qemu (last one wins conflict)
+# OPT=
+#   -hdb /path/to/seconddisk.img
+#   -hdd fourthdisk.img
+#   (-hdc conflicts with -cdrom)
+#   -drive format=raw,media=cdrom,readonly,file=cd.iso
+#   -nic model=virtio-net-pci
+#   -device VGA,edid=on,xres=1366,yres=768
+#   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
+#   ...and other qemu command options
 #
-# Fixes Windows guest mouse pointer issues
+# Fixes MS Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
 #
 # Recommended for Linux guests instead of std VGA
@@ -70,6 +63,10 @@ MEM="4G"
 #OPT="-vga virtio"
 #OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
+#
+# UEFI boot
+#OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
+#OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
 #
 # Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
@@ -98,6 +95,7 @@ AUDIO=$(echo $(awk -F\" '/^AUDIO=/ {print $2; exit}' ${CFG}))
 NET=$(echo $(awk -F\" '/^NET=/ {print $2; exit}' ${CFG}))
 MAC=$(echo $(awk -F\" '/^MAC=/ {print $2; exit}' ${CFG}))
 VNC=$(echo $(awk -F\" '/^VNC=/ {print $2; exit}' ${CFG}))
+LOSSY=$(echo $(awk -F\" '/^LOSSY=/ {print $2; exit}' ${CFG}))
 TELNET=$(echo $(awk -F\" '/^TELNET=/ {print $2; exit}' ${CFG}))
 SSH=$(echo $(awk -F\" '/^SSH=/ {print $2; exit}' ${CFG}))
 ## Get all matches for OPT
@@ -181,10 +179,13 @@ if [[ ${DEPLIST} ]]; then
   exit 1
 fi
 
+## Default EDITOR if not set
+[[ ! ${EDITOR} ]] && EDITOR="/usr/bin/vim"
+
 ##
 ## Variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.17"
+VER="1.0.18"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -487,9 +488,16 @@ case ${ICH9} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE])
 esac
 
 ##
+## VNC quality
+##
+case ${LOSSY} in 1|y|Y|[yY][eE][sS]|[oO][nN]|[tT][rR][uU][eE])
+  QUALITY=",lossy=on" ;;
+esac
+
+##
 ## Video output and console monitor
 ##
-[[ ${VNC} ]] && VIDEO="-vnc ${VNC},lossy=on,power-control=on"
+[[ ${VNC} ]] && VIDEO="-vnc ${VNC}${QUALITY}"
 [[ ${TELNET} ]] && CONSOLE="-monitor telnet:127.0.0.1:${TELNET},server=on,wait=off"
 
 ##
