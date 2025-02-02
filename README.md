@@ -94,7 +94,7 @@ MEM="4G"
 #OPT="-display sdl"
 #OPT="-daemonize"
 
-Saved in: /home/tomek/.config/qvm/foo
+Saved in: /home/you/.config/qvm/foo
 Edit this file and set IMG= and/or ISO=
 ```
 
