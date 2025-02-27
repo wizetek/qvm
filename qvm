@@ -1,22 +1,26 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2025/01/29
+## 2022/11/25-2025/02/26
 ## Tom Wizetek <tom@wizetek.com>
+
+#### FUNCTIONS
 
 ##
 ## Function to create config file
 ##
 createConfigFile() {
 cat 2>/dev/null 1>${CFG} << CONFIG
-# ${CMD} configuration
-#
-# One variable per line
-# No spaces in front
-# Values must be enclosed in (begin with) double quotes
-# First conflicting instance wins except multiple OPT
-#
-# Zero delay also disables startup prompt to edit config
+##
+## ${CMD} configuration
+##
+
+## One variable per line.
+## No spaces in front.
+## Values must be enclosed in (begin with) double quotes.
+## First conflicting instance wins except multiple OPT.
+
+## Zero delay also disables startup prompt to edit config
 #DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
@@ -24,51 +28,51 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 #RAW="yes"
 CPU="2"
 MEM="4G"
-# ICH9= <boolean>
-#   yes: Q35/ICH9 host chipset
-#   no: i440FX/PIIX3
+## ICH9= <boolean>
+##   yes: Q35/ICH9 host chipset
+##   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-# NET= <boolean> | bridge0 | br0 | virbr0
-#   yes: enable
-#   no: no networking (disables setting MAC)
+## NET= <boolean> | bridge0 | br0 | virbr0
+##   yes: enable
+##   no: no networking (disables setting MAC)
 #NET="no"
-# MAC= <empty> | random | 52:54:de:ad:be:ef
-#   <empty>: QEMU default
-#   random: generated on startup
+## MAC= <empty> | random | 52:54:de:ad:be:ef
+##   <empty>: QEMU default
+##   random: generated on startup
 #MAC="random"
 #VNC=":2"
 #LOSSY="yes"
 #TELNET="2302"
 #SSH="2202"
-#
-# Options passed to qemu (last one wins conflict)
-# OPT=
-#   -hdb /path/to/seconddisk.img
-#   -hdd fourthdisk.img
-#   (-hdc conflicts with -cdrom)
-#   -drive format=raw,media=cdrom,readonly,file=cd.iso
-#   -nic model=virtio-net-pci
-#   -device VGA,edid=on,xres=1366,yres=768
-#   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-#   ...and other qemu command options
-#
-# Fixes MS Windows guest mouse pointer issues
+
+## Options passed to qemu (last one wins conflict)
+## OPT=
+##   -hdb /path/to/seconddisk.img
+##   -hdd fourthdisk.img
+##   (-hdc conflicts with -cdrom)
+##   -drive format=raw,media=cdrom,readonly,file=cd.iso
+##   -nic model=virtio-net-pci
+##   -device VGA,edid=on,xres=1366,yres=768
+##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
+##   ...and other qemu command options
+
+## Fixes MS Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
-#
-# Recommended for Linux guests instead of std VGA
+
+## Recommended for Linux guests instead of std VGA
 #OPT="-vga qxl"
-#
-# For OpenGL, Wayland, etc.
+
+## For OpenGL, Wayland, etc.
 #OPT="-vga virtio"
 #OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-#
-# UEFI boot
+
+## UEFI boot
 #OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
-#
-# Miscellaneous
+
+## Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
 #OPT="-daemonize"
@@ -147,7 +151,7 @@ IMGSTATUS=1
 qemuLaunch () {
 PS4=""
 set -x
-qemu-system-x86_64 \
+${QEMUBIN} \
 "${@}" \
 -name "${NAME}" \
 -accel kvm -cpu host \
@@ -162,12 +166,21 @@ ${OPT} \
 ${ARG}
 }
 
-#### BEGIN ####
+#### MAIN
 
 ##
 ## Check binary dependencies
 ##
-for i in awk qemu-system-x86_64 qemu-img; do
+## Path and binary name on Red Hat based systems
+if [[ -f /usr/libexec/qemu-kvm ]]; then
+  PATH="$PATH:/usr/libexec"
+  QEMUBIN="qemu-kvm"
+else
+  QEMUBIN="qemu-system-x86_64"
+fi
+
+## Check if QEMU binaries are present
+for i in awk ${QEMUBIN} qemu-img; do
   if [[ ! $(type -p ${i}) ]]; then
     DEPLIST="${i} ${DEPLIST}"
   fi
@@ -183,9 +196,9 @@ fi
 [[ ! ${EDITOR} ]] && EDITOR="/usr/bin/vim"
 
 ##
-## Variables for version, command, config dir/file, and user provided arguments
+## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.18"
+VER="1.0.19"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
