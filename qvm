@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2025/02/26
+## 2022/11/25-2025/11/20
 ## Tom Wizetek <tom@wizetek.com>
 
 #### FUNCTIONS
@@ -71,6 +71,11 @@ MEM="4G"
 ## UEFI boot
 #OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
+#OPT="-bios /usr/share/qemu/ovmf-x86_64-4m.bin"
+
+## TPM emulation - must run 'swtpm' beforehand
+##   swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/swtpm-sock
+#OPT="-chardev socket,id=chrtpm,path=/tmp/swtpm-sock -tpmdev emulator,id=tpm0,chardev=chrtpm -device tpm-tis,tpmdev=tpm0"
 
 ## Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
@@ -198,7 +203,7 @@ fi
 ##
 ## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.19"
+VER="1.0.20"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
