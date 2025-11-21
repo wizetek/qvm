@@ -30,14 +30,16 @@ Requires a configuration file as an argument and can take multiple [options](htt
 $ qvm foo
 /home/you/.config/qvm/foo: Configuration file not found
 (C)reate config or (q)uit?
-# qvm configuration
-#
-# One variable per line
-# No spaces in front
-# Values must be enclosed in (begin with) double quotes
-# First conflicting instance wins except multiple OPT
-#
-# Zero delay also disables startup prompt to edit config
+##
+## qvm configuration
+##
+
+## One variable per line.
+## No spaces in front.
+## Values must be enclosed in (begin with) double quotes.
+## First conflicting instance wins except multiple OPT.
+
+## Zero delay also disables startup prompt to edit config
 #DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
@@ -45,56 +47,61 @@ $ qvm foo
 #RAW="yes"
 CPU="2"
 MEM="4G"
-# ICH9= <boolean>
-#   yes: Q35/ICH9 host chipset
-#   no: i440FX/PIIX3
+## ICH9= <boolean>
+##   yes: Q35/ICH9 host chipset
+##   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-# NET= <boolean> | bridge0 | br0 | virbr0
-#   yes: enable
-#   no: no networking (disables setting MAC)
+## NET= <boolean> | bridge0 | br0 | virbr0
+##   yes: enable
+##   no: no networking (disables setting MAC)
 #NET="no"
-# MAC= <empty> | random | 52:54:de:ad:be:ef
-#   <empty>: QEMU default
-#   random: generated on startup
+## MAC= <empty> | random | 52:54:de:ad:be:ef
+##   <empty>: QEMU default
+##   random: generated on startup
 #MAC="random"
 #VNC=":2"
 #LOSSY="yes"
 #TELNET="2302"
 #SSH="2202"
-#
-# Options passed to qemu (last one wins conflict)
-# OPT=
-#   -hdb /path/to/seconddisk.img
-#   -hdd fourthdisk.img
-#   (-hdc conflicts with -cdrom)
-#   -drive format=raw,media=cdrom,readonly,file=cd.iso
-#   -nic model=virtio-net-pci
-#   -device VGA,edid=on,xres=1366,yres=768
-#   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
-#   ...and other qemu command options
-#
-# Fixes MS Windows guest mouse pointer issues
+
+## Options passed to qemu (last one wins conflict)
+## OPT=
+##   -hdb /path/to/seconddisk.img
+##   -hdd fourthdisk.img
+##   (-hdc conflicts with -cdrom)
+##   -drive format=raw,media=cdrom,readonly,file=cd.iso
+##   -nic model=virtio-net-pci
+##   -device VGA,edid=on,xres=1366,yres=768
+##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
+##   ...and other qemu command options
+
+## Fixes MS Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
-#
-# Recommended for Linux guests instead of std VGA
+
+## Recommended for Linux guests instead of std VGA
 #OPT="-vga qxl"
-#
-# For OpenGL, Wayland, etc.
+
+## For OpenGL, Wayland, etc.
 #OPT="-vga virtio"
 #OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-#
-# UEFI boot
+
+## UEFI boot
 #OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
-#
-# Miscellaneous
+#OPT="-bios /usr/share/qemu/ovmf-x86_64-4m.bin"
+
+## TPM emulation - must run 'swtpm' beforehand
+##   swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/swtpm-sock
+#OPT="-chardev socket,id=chrtpm,path=/tmp/swtpm-sock -tpmdev emulator,id=tpm0,chardev=chrtpm -device tpm-tis,tpmdev=tpm0"
+
+## Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
 #OPT="-daemonize"
 
-Saved in: /home/you/.config/qvm/foo
+Saved in: /home/tomek/.config/qvm/test
 Edit this file and set IMG= and/or ISO=
 ```
 
