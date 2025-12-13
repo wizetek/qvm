@@ -52,7 +52,7 @@ MEM="4G"
 ##   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-## NET= <boolean> | bridge0 | br0 | virbr0
+## NET= <boolean> | bridge0 | br0 | virbr0 | nm-bridge
 ##   yes: enable
 ##   no: no networking (disables setting MAC)
 #NET="no"
