@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2025/11/20
+## 2022/11/25-2025/12/13
 ## Tom Wizetek <tom@wizetek.com>
 
 #### FUNCTIONS
@@ -33,7 +33,7 @@ MEM="4G"
 ##   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-## NET= <boolean> | bridge0 | br0 | virbr0
+## NET= <boolean> | bridge0 | br0 | virbr0 | nm-bridge
 ##   yes: enable
 ##   no: no networking (disables setting MAC)
 #NET="no"
@@ -203,7 +203,7 @@ fi
 ##
 ## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.20"
+VER="1.0.21"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -466,7 +466,7 @@ case ${NET} in
   0|n|N|[nN][oO]|[oO][fF][fF]|[fF][aA][lL][sS][eE]) NIC="-nic none" ;;
 
   ## NET=bridge
-  br[0-9]|bridge[0-9]|virbr[0-9])
+  br[0-9]|bridge[0-9]|virbr[0-9]|nm-bridge*)
   NIC="-nic bridge,br=${NET}"
   [[ ${MAC} ]] && NIC="${NIC},mac=${MAC}"
   ;;
