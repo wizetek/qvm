@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 ## qvm - Quick/QEMU VM launcher
-## 2022/11/25-2025/12/13
 ## Tom Wizetek <tom@wizetek.com>
+## 2022/11/25 - 2026/06/17
 
 #### FUNCTIONS
 
@@ -15,12 +15,34 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ## ${CMD} configuration
 ##
 
-## One variable per line.
-## No spaces in front.
-## Values must be enclosed in (begin with) double quotes.
-## First conflicting instance wins except multiple OPT.
+## One variable per line
+## No spaces in front
+## Values must be enclosed in (begin with) double quotes
+## First conflicting instance wins except multiple OPT
 
+## DELAY= <seconds>
 ## Zero delay also disables startup prompt to edit config
+
+## ICH9= <boolean>
+##   yes: Q35/ICH9 host chipset
+##   no: i440FX/PIIX3
+
+## NET= <boolean> | br0 | bridge0 | virbr0 | nm-bridge
+##   yes: enable
+##   no: no networking (disables setting MAC)
+
+## MAC= <empty> | random | 52:54:de:ad:be:ef
+##   <empty>: QEMU default
+##   random: generated on startup
+
+## TELNET= <port>
+## Provides access to QEMU Monitor:
+##   nc | telnet localhost <port>
+
+## SSH= <port>
+## Forwards guest's SSH port 22 with host-only networking; connect:
+##   ssh localhost <port>
+
 #DELAY="1"
 #NAME="Linux distro"
 #ISO="linux.iso"
@@ -28,18 +50,9 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 #RAW="yes"
 CPU="2"
 MEM="4G"
-## ICH9= <boolean>
-##   yes: Q35/ICH9 host chipset
-##   no: i440FX/PIIX3
 #ICH9="yes"
 #AUDIO="yes"
-## NET= <boolean> | bridge0 | br0 | virbr0 | nm-bridge
-##   yes: enable
-##   no: no networking (disables setting MAC)
 #NET="no"
-## MAC= <empty> | random | 52:54:de:ad:be:ef
-##   <empty>: QEMU default
-##   random: generated on startup
 #MAC="random"
 #VNC=":2"
 #LOSSY="yes"
@@ -47,6 +60,7 @@ MEM="4G"
 #SSH="2202"
 
 ## Options passed to qemu (last one wins conflict)
+##
 ## OPT=
 ##   -hdb /path/to/seconddisk.img
 ##   -hdd fourthdisk.img
@@ -68,7 +82,7 @@ MEM="4G"
 #OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
 
-## UEFI boot
+## UEFI boot (path varies among distros)
 #OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
 #OPT="-bios /usr/share/qemu/ovmf-x86_64-4m.bin"
@@ -81,6 +95,7 @@ MEM="4G"
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
 #OPT="-daemonize"
+#OPT="-monitor stdio"
 CONFIG
 
 ## Store exit code
@@ -203,7 +218,7 @@ fi
 ##
 ## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.21"
+VER="1.0.22"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
