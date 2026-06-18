@@ -35,9 +35,13 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 ##   <empty>: QEMU default
 ##   random: generated on startup
 
+## VNC= <port>
+## Displays output via VNC instead of local
+
 ## TELNET= <port>
-## Provides access to QEMU Monitor:
-##   nc | telnet localhost <port>
+## Provides access to QEMU Monitor; connect:
+##   telnet localhost <port>
+##   nc localhost <port>
 
 ## SSH= <port>
 ## Forwards guest's SSH port 22 with host-only networking; connect:
@@ -59,7 +63,7 @@ MEM="4G"
 #TELNET="2302"
 #SSH="2202"
 
-## Options passed to qemu (last one wins conflict)
+## Options passed to qemu binary (last one wins conflict)
 ##
 ## OPT=
 ##   -hdb /path/to/seconddisk.img
