@@ -2,7 +2,7 @@
 
 ## qvm - Quick/QEMU VM launcher
 ## Tom Wizetek <tom@wizetek.com>
-## 2022/11/25 - 2026/06/17
+## 2022/11/25 - 2026/06/18
 
 #### FUNCTIONS
 
@@ -25,15 +25,15 @@ cat 2>/dev/null 1>${CFG} << CONFIG
 
 ## ICH9= <boolean>
 ##   yes: Q35/ICH9 host chipset
-##   no: i440FX/PIIX3
+##   no | <empty>: i440FX/PIIX3 (default)
 
 ## NET= <boolean> | br0 | bridge0 | virbr0 | nm-bridge
-##   yes: enable
-##   no: no networking (disables setting MAC)
+##   yes | <empty>: Enable (default)
+##   no: No networking (disables setting MAC)
 
 ## MAC= <empty> | random | 52:54:de:ad:be:ef
 ##   <empty>: QEMU default
-##   random: generated on startup
+##   random: Generated on startup
 
 ## VNC= <port>
 ## Displays output via VNC instead of local
@@ -91,7 +91,8 @@ MEM="4G"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
 #OPT="-bios /usr/share/qemu/ovmf-x86_64-4m.bin"
 
-## TPM emulation - must run 'swtpm' beforehand
+## TPM emulation
+## Must run 'swtpm' beforehand:
 ##   swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/swtpm-sock
 #OPT="-chardev socket,id=chrtpm,path=/tmp/swtpm-sock -tpmdev emulator,id=tpm0,chardev=chrtpm -device tpm-tis,tpmdev=tpm0"
 
