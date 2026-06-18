@@ -41,12 +41,10 @@ Attempts to launch the virtual machine using the configuration file `foo` if ava
 #### 2.
 `/home/you/.config/qvm/foo`
 ```
-...
-...
 ISO="PeppermintOS-amd64.iso"
-...
-...
 ```
+
+<br>
 
 ```
 $ qvm foo
@@ -65,13 +63,11 @@ Boots from the `.iso` image set in the configuration file. (Good for testing but
 #### 3.
 `/home/you/.config/qvm/foo`
 ```
-...
-...
 ISO="PeppermintOS-amd64.iso"
 IMG="peppermint.qcow2"
-...
-...
 ```
+
+<br>
 
 ```
 $ qvm foo
