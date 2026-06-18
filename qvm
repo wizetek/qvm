@@ -98,6 +98,7 @@ MEM="4G"
 ## Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
+#OPT="-display none"
 #OPT="-daemonize"
 #OPT="-monitor stdio"
 CONFIG
