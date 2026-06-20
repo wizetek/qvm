@@ -120,5 +120,6 @@ Boots up the `.qcow2` disk image using configuration in custom path `/tmp/test`.
 <br>
 
 ## Notes
-* When a (hard) disk image is attached, booting from `.iso` happens only once on initial VM startup so that after the VM is reset it can boot from disk instead of going in a loop
+* When a (virtual hard) disk image is attached, booting from `.iso` happens only once on initial VM startup. After the VM is reset, it boots from disk instead of booting from `.iso` again in a loop. After poweroff, first boot is again from `.iso`. Comment it out in the config file to always boot from disk. 
 * Spaces in file names are supported for `ISO=` and `IMG=` defined in configuration files but not when specified on command line
+* _QEMU Monitor_ allows to pause the VM (command: `stop`) and resume (`cont`). VM status can be checked with `info status`. Numerous other operations can be performed through the monitor, like adding/removing devices, setting VNC password, etc.
