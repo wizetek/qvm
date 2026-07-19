@@ -224,7 +224,7 @@ fi
 ##
 ## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.22"
+VER="1.0.23"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
@@ -542,7 +542,8 @@ esac
 ##
 ## Check config for missing settings and set defaults if needed
 ##
-[[ ! ${NAME} ]] && NAME="$(basename ${CFG})"
+DEFAULTNAME="$(basename ${CFG})"
+[[ ${DEFAULTNAME} == *"id"* ]] && NAME="" || NAME=${DEFAULTNAME}
 [[ ! ${CPU} ]] && CPU=1
 [[ ! ${MEM} ]] && MEM=2G
 
