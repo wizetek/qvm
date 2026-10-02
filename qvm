@@ -546,6 +546,7 @@ esac
 ## Check config for missing settings and set defaults if needed
 ##
 DEFAULTNAME="$(basename ${CFG})"
+[[ ${NAME} == "" ]] && NAME=${DEFAULTNAME}
 [[ ! ${CPU} ]] && CPU=1
 [[ ! ${MEM} ]] && MEM=2G
 
