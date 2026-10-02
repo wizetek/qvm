@@ -2,7 +2,7 @@
 
 ## qvm - Quick/QEMU VM launcher
 ## Tom Wizetek <tom@wizetek.com>
-## 2022/11/25 - 2026/07/19
+## 2022/11/25 - 2026/10/02
 
 #### FUNCTIONS
 
@@ -11,60 +11,44 @@
 ##
 createConfigFile() {
 cat 2>/dev/null 1>${CFG} << CONFIG
+## ${CFG}
+## (${CMD} configuration file)
 ##
-## ${CMD} configuration
+## -> One variable per line
+## -> No spaces in front
+## -> Values must be enclosed in (begin with) double quotes
+## -> First conflicting instance wins except multiple OPT
 ##
-
-## One variable per line
-## No spaces in front
-## Values must be enclosed in (begin with) double quotes
-## First conflicting instance wins except multiple OPT
-
+## Options and their values:
+##
 ## DELAY= <seconds>
 ## Zero delay also disables startup prompt to edit config
-
+##
 ## ICH9= <boolean>
 ##   yes: Q35/ICH9 host chipset
 ##   no | <empty>: i440FX/PIIX3 (default)
-
+##
 ## NET= <boolean> | br0 | bridge0 | virbr0 | nm-bridge
 ##   yes | <empty>: Enable (default)
 ##   no: No networking (disables setting MAC)
-
+##
 ## MAC= <empty> | random | 52:54:de:ad:be:ef
 ##   <empty>: QEMU default
 ##   random: Generated on startup
-
+##
 ## VNC= <port>
 ## Displays output via VNC instead of local
-
+##
 ## TELNET= <port>
 ## Provides access to QEMU Monitor; connect:
 ##   telnet localhost <port>
 ##   nc localhost <port>
-
+##
 ## SSH= <port>
 ## Forwards guest's SSH port 22 with host-only networking; connect:
 ##   ssh localhost <port>
-
-#DELAY="1"
-#NAME="Linux distro"
-#ISO="linux.iso"
-#IMG="disk.qcow2"
-#RAW="yes"
-CPU="2"
-MEM="4G"
-#ICH9="yes"
-#AUDIO="yes"
-#NET="no"
-#MAC="random"
-#VNC=":2"
-#LOSSY="yes"
-#TELNET="2302"
-#SSH="2202"
-
-## Options passed to qemu binary (last one wins conflict)
 ##
+## Options passed to qemu binary (last one wins conflict):
 ## OPT=
 ##   -hdb /path/to/seconddisk.img
 ##   -hdd fourthdisk.img
@@ -75,28 +59,47 @@ MEM="4G"
 ##   -device qxl-vga,ram_size_mb=256,vram_size_mb=256
 ##   ...and other qemu command options
 
-## Fixes MS Windows guest mouse pointer issues
+#DELAY="1"
+#NAME="Linux distro"
+#ISO="linux.iso"
+#IMG="disk.qcow2"
+#RAW="yes"
+CPU="2"
+MEM="4G"
+#ICH9="yes"
+#AUDIO="yes"
+#NET="nm-bridge"
+#MAC="random"
+#VNC=":2"
+#LOSSY="yes"
+#TELNET="2302"
+#SSH="2202"
+#
+# Fixes MS Windows guest mouse pointer issues
 #OPT="-usbdevice tablet"
-
-## Recommended for Linux guests instead of std VGA
+#
+# Set initial resolution for MS Windows guests
+#OPT="-device VGA,edid=on,xres=1920,yres=1080"
+#
+# Recommended for Linux guests instead of std VGA
 #OPT="-vga qxl"
-
-## For OpenGL, Wayland, etc.
+#
+# For OpenGL, Wayland, etc.
 #OPT="-vga virtio"
 #OPT="-device virtio-vga"
 #OPT="-device virtio-vga-gl -display gtk,gl=on"
-
-## UEFI boot (path varies among distros)
+#
+# UEFI boot (path varies among distros)
 #OPT="-bios /usr/share/ovmf/x64/OVMF.fd"
 #OPT="-bios /usr/share/edk2/x64/OVMF.4m.fd"
 #OPT="-bios /usr/share/qemu/ovmf-x86_64-4m.bin"
-
-## TPM emulation
-## Must run 'swtpm' beforehand:
-##   swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/swtpm-sock
+#
+# TPM emulation
+# Must run 'swtpm' beforehand:
+#   swtpm socket --tpm2 --tpmstate dir=/tmp --ctrl type=unixio,path=/tmp/swtpm-sock
 #OPT="-chardev socket,id=chrtpm,path=/tmp/swtpm-sock -tpmdev emulator,id=tpm0,chardev=chrtpm -device tpm-tis,tpmdev=tpm0"
-
-## Miscellaneous
+#
+# Miscellaneous
 #OPT="-display gtk,zoom-to-fit=on,window-close=off"
 #OPT="-display sdl"
 #OPT="-display none"
@@ -224,7 +227,7 @@ fi
 ##
 ## Set variables for version, command, config dir/file, and user provided arguments
 ##
-VER="1.0.23"
+VER="1.0.24"
 CMD="$(basename ${0})"
 CFGDIR="${HOME}/.config/${CMD}" 
 CFG="${1}"
